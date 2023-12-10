@@ -4,18 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.bi4vmr.tool</groupId>
-    <artifactId>BaseLib-Java</artifactId>
+    <groupId>net.bi4vmr.tool.baselib-java</groupId>
+    <artifactId>rootproject</artifactId>
     <name>BaseLib-Java</name>
     <description>Java基础工具库。</description>
     <version>${revision}</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>All</module>
-        <module>Common</module>
-        <module>Crypto</module>
-        <module>JSON</module>
+        <module>lib-all</module>
+        <module>lib-common</module>
+        <module>lib-json</module>
+        <module>lib-security</module>
+        <module>lib-template</module>
     </modules>
 
     <properties>

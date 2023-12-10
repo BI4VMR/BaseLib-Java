@@ -1,0 +1,60 @@
+package net.bi4vmr.tool.baselib.java;
+
+/**
+ * Name        : EnumDemo
+ * <p>
+ * Author      : BI4VMR
+ * <p>
+ * Email       : bi4vmr@outlook.com
+ * <p>
+ * Date        : 2023-12-10 21:55
+ * <p>
+ * Description : 枚举类模板。
+ */
+public enum EnumDemo {
+    ITEM_01,
+    ITEM_02,
+    ITEM_03;
+
+    /**
+     * Name        : 获取下一项
+     * <p>
+     * Description : 获取当前常量在声明列表中的后一个常量。
+     * <p>
+     * 如果当前已经是最后一项，则返回列表中的第一项。
+     *
+     * @return 下一项
+     */
+    public EnumDemo next() {
+        EnumDemo[] items = values();
+        int ordinal = ordinal();
+        if (ordinal < items.length - 1) {
+            // 当前常量的序号小于最后一项时，返回后一项。
+            return items[ordinal + 1];
+        } else {
+            // 当前常量的序号等于最后一项时，返回第一项。
+            return items[0];
+        }
+    }
+
+    /**
+     * Name        : 根据序号获取枚举常量
+     * <p>
+     * Description : 根据序号获取对应的枚举常量。
+     *
+     * @param ordinal 枚举序号
+     * @return 枚举常量。
+     * <p>
+     * 如果传入参数没有对应的常量，则返回空值。
+     */
+    public static EnumDemo valueOf(int ordinal) {
+        EnumDemo[] items = values();
+        for (EnumDemo item : items) {
+            if (item.ordinal() == ordinal) {
+                return item;
+            }
+        }
+
+        return null;
+    }
+}

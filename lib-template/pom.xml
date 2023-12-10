@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 父级工程 -->
+    <parent>
+        <groupId>net.bi4vmr.tool.baselib-java</groupId>
+        <artifactId>rootproject</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <!-- 工程属性 -->
+    <artifactId>lib-template</artifactId>
+    <name>BaseLib-Java-Template</name>
+    <description>
+        模板代码。
+        仅供参考内容，无需生成构建产物。
+    </description>
+
+    <!-- 依赖声明 -->
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

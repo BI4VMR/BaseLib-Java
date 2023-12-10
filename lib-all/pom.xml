@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.bi4vmr.tool.baselib-java</groupId>
+        <artifactId>rootproject</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>lib-all</artifactId>
+    <name>BaseLib-Java-All</name>
+    <description>
+        本模块不包含实际功能，仅用于传递依赖。
+        当外部使用本库时，只需要声明依赖此模块，就可以统一导入其它模块。
+    </description>
+
+    <properties>
+        <!-- 父工程的组名 -->
+        <parentGroup>net.bi4vmr.tool.baselib-java</parentGroup>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${parentGroup}</groupId>
+            <artifactId>lib-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${parentGroup}</groupId>
+            <artifactId>lib-json</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${parentGroup}</groupId>
+            <artifactId>lib-security</artifactId>
+            <version>${revision}</version>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.bi4vmr.tool.baselib-java</groupId>
+        <artifactId>rootproject</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>lib-json</artifactId>
+    <name>BaseLib-Java-JSON</name>
+    <description>JSON解析与生成工具。</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.bi4vmr.tool.baselib-java</groupId>
+            <artifactId>lib-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
