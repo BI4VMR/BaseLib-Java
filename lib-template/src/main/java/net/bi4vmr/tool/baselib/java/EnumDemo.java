@@ -17,6 +17,27 @@ public enum EnumDemo {
     ITEM_03;
 
     /**
+     * Name        : 获取上一项
+     * <p>
+     * Description : 获取当前常量在声明列表中的前一个常量。
+     * <p>
+     * 如果当前已经是第一项，则返回列表中的最后一项。
+     *
+     * @return 上一项
+     */
+    public EnumDemo previous() {
+        EnumDemo[] items = EnumDemo.values();
+        int ordinal = ordinal();
+        if (ordinal == 0) {
+            // 当前常量的序号为第一项时，返回最后一项。
+            return items[items.length - 1];
+        } else {
+            // 当前常量的序号不是第一项时，返回前一项。
+            return items[ordinal - 1];
+        }
+    }
+
+    /**
      * Name        : 获取下一项
      * <p>
      * Description : 获取当前常量在声明列表中的后一个常量。

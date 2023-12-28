@@ -25,6 +25,12 @@ public class TestEnumDemo {
         System.out.println(EnumDemo.valueOf(-1));
         System.out.println();
 
+        /* 获取上一项 */
+        System.out.println("获取上一项：");
+        System.out.println(EnumDemo.ITEM_01.previous());
+        System.out.println(EnumDemo.ITEM_02.previous());
+        System.out.println(EnumDemo.ITEM_03.previous());
+
         /* 获取下一项 */
         System.out.println("获取下一项：");
         System.out.println(EnumDemo.ITEM_01.next());
