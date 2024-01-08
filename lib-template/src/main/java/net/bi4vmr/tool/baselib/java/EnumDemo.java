@@ -26,14 +26,16 @@ public enum EnumDemo {
      * @return 上一项
      */
     public EnumDemo previous() {
-        EnumDemo[] items = EnumDemo.values();
-        int ordinal = ordinal();
-        if (ordinal == 0) {
-            // 当前常量的序号为第一项时，返回最后一项。
-            return items[items.length - 1];
+        EnumDemo[] items = values();
+        int maxOrdinal = items.length - 1;
+        int itemOrdinal = ordinal();
+
+        if (itemOrdinal == 0) {
+            // 当前常量为第一项时，返回最后一项。
+            return items[maxOrdinal];
         } else {
-            // 当前常量的序号不是第一项时，返回前一项。
-            return items[ordinal - 1];
+            // 当前常量不是第一项时，返回前一项。
+            return items[itemOrdinal - 1];
         }
     }
 
@@ -48,12 +50,14 @@ public enum EnumDemo {
      */
     public EnumDemo next() {
         EnumDemo[] items = values();
-        int ordinal = ordinal();
-        if (ordinal < items.length - 1) {
-            // 当前常量的序号小于最后一项时，返回后一项。
-            return items[ordinal + 1];
+        int maxOrdinal = items.length - 1;
+        int itemOrdinal = ordinal();
+
+        if (itemOrdinal < maxOrdinal) {
+            // 当前常量的序号小于最后一项的序号时，返回后一项。
+            return items[itemOrdinal + 1];
         } else {
-            // 当前常量的序号等于最后一项时，返回第一项。
+            // 当前常量的序号等于最后一项的序号时，返回第一项。
             return items[0];
         }
     }
