@@ -64,7 +64,7 @@ public enum EnumDemo {
      * @param ordinal 枚举序号。
      * @return 枚举常量。如果传入参数没有对应的常量，则返回空值。
      */
-    public static EnumDemo valueOf(int ordinal) {
+    public static EnumDemo parseFromIndex(int ordinal) {
         EnumDemo[] items = values();
         for (EnumDemo item : items) {
             if (item.ordinal() == ordinal) {

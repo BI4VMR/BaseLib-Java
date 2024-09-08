@@ -14,9 +14,9 @@ public class TestEnumDemo {
     void test() {
         /* 根据序号获得对应的枚举常量 */
         System.out.println("根据序号获得对应的枚举常量：");
-        System.out.println(EnumDemo.valueOf(0));
-        System.out.println(EnumDemo.valueOf(2));
-        System.out.println(EnumDemo.valueOf(-1));
+        System.out.println(EnumDemo.parseFromIndex(0));
+        System.out.println(EnumDemo.parseFromIndex(2));
+        System.out.println(EnumDemo.parseFromIndex(-1));
 
         /* 获取上一项 */
         System.out.println();
