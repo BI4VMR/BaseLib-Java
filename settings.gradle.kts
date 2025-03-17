@@ -9,7 +9,7 @@ pluginManagement {
         run {
             java.net.NetworkInterface.getNetworkInterfaces().toList().forEach {
                 it.inetAddresses.toList().forEach { addr ->
-                    if ((addr is java.net.Inet4Address) && (addr.hostAddress.startsWith("172.18."))) {
+                    if ((addr is java.net.Inet4Address) && (addr.hostAddress.startsWith("172.16."))) {
                         isInPrivateLAN = true
                         return@run
                     }
@@ -22,14 +22,22 @@ pluginManagement {
             println("Current host is in private network, add LAN repositorys.")
             maven {
                 isAllowInsecureProtocol = true
-                setUrl("http://172.18.5.1:8081/repository/maven-union/")
+                setUrl("http://172.16.5.1:8081/repository/maven-mirror-tencent/")
+            }
+            maven {
+                isAllowInsecureProtocol = true
+                setUrl("http://172.16.5.1:8081/repository/maven-private/")
             }
         } else {
             if (java.net.InetAddress.getByName("192.168.128.1").isReachable(5)) {
                 println("Current host is not in private network, add VPN repositorys.")
                 maven {
                     isAllowInsecureProtocol = true
-                    setUrl("http://192.168.128.1:8081/repository/maven-union/")
+                    setUrl("http://192.168.128.1:8081/repository/maven-mirror-tencent/")
+                }
+                maven {
+                    isAllowInsecureProtocol = true
+                    setUrl("http://192.168.128.1:8081/repository/maven-private/")
                 }
             } else {
                 println("Current host is not in private network, add LOCAL repositorys.")
@@ -59,7 +67,7 @@ dependencyResolutionManagement {
         run {
             java.net.NetworkInterface.getNetworkInterfaces().toList().forEach {
                 it.inetAddresses.toList().forEach { addr ->
-                    if ((addr is java.net.Inet4Address) && (addr.hostAddress.startsWith("172.18."))) {
+                    if ((addr is java.net.Inet4Address) && (addr.hostAddress.startsWith("172.16."))) {
                         isInPrivateLAN = true
                         return@run
                     }
@@ -70,13 +78,21 @@ dependencyResolutionManagement {
         if (hostName.startsWith("BI4VMR") && isInPrivateLAN) {
             maven {
                 isAllowInsecureProtocol = true
-                setUrl("http://172.18.5.1:8081/repository/maven-union/")
+                setUrl("http://172.16.5.1:8081/repository/maven-mirror-tencent/")
+            }
+            maven {
+                isAllowInsecureProtocol = true
+                setUrl("http://172.16.5.1:8081/repository/maven-private/")
             }
         } else {
             if (java.net.InetAddress.getByName("192.168.128.1").isReachable(5)) {
                 maven {
                     isAllowInsecureProtocol = true
-                    setUrl("http://192.168.128.1:8081/repository/maven-union/")
+                    setUrl("http://192.168.128.1:8081/repository/maven-mirror-tencent/")
+                }
+                maven {
+                    isAllowInsecureProtocol = true
+                    setUrl("http://192.168.128.1:8081/repository/maven-private/")
                 }
             } else {
                 mavenLocal()
