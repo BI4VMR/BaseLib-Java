@@ -25,10 +25,5 @@ public class TestTextUtil {
         System.out.println("s2: " + s2 + " is not empty? " + TextUtil.isNotEmpty(s2));
         System.out.println("s3: " + s3 + " is not empty? " + TextUtil.isNotEmpty(s3));
         System.out.println();
-
-        String s4 = "012";
-        System.out.println(TextUtil.getSerialNumber(s4, 3));
-        System.out.println(TextUtil.getSerialNumber(s4, 4));
-        System.out.println(TextUtil.getSerialNumber(s4, 5));
     }
 }
