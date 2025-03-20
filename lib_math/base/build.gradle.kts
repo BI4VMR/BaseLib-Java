@@ -23,9 +23,9 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    implementation(baselibs.java.text.base)
+    implementation(privateLibJava.text.base)
 
-    testImplementation(libs.java.junit.jupiter)
+    testImplementation(libJava.junit5.jupiter)
 }
 
 publishing {

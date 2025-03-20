@@ -8,13 +8,13 @@ plugins {
 }
 
 dependencies {
-    implementation(baselibs.java.common.base)
-    implementation(baselibs.java.io.base)
-    implementation(baselibs.java.storage.file)
-    implementation(baselibs.java.text.base)
-    implementation(baselibs.java.text.gson)
-    implementation(baselibs.java.math.base)
-    implementation(baselibs.java.security.digest)
+    implementation(privateLibJava.common.base)
+    implementation(privateLibJava.io.base)
+    implementation(privateLibJava.storage.file)
+    implementation(privateLibJava.text.base)
+    implementation(privateLibJava.text.gson)
+    implementation(privateLibJava.math.base)
+    implementation(privateLibJava.security.digest)
 }
 
 publishing {

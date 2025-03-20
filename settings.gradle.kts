@@ -107,15 +107,14 @@ dependencyResolutionManagement {
 
     // 版本管理配置
     versionCatalogs {
-        // 声明命名空间"libs"
-        create("libs") {
-            // 导入依赖版本配置文件
-            from(files("script/version/dependency.toml"))
+        // 公共组件(Java)
+        create("libJava") {
+            from(files("misc/version/dependency_public_java.toml"))
         }
 
-        // 基础组件库
-        create("baselibs") {
-            from(files("script/version/dependency_baselib.toml"))
+        // 私有组件(Java)
+        create("privateLibJava") {
+            from(files("misc/version/dependency_private_java.toml"))
         }
     }
 }

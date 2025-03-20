@@ -23,7 +23,7 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    testImplementation(libs.java.junit.jupiter)
+    testImplementation(libJava.junit5.jupiter)
 }
 
 publishing {

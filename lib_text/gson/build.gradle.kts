@@ -23,10 +23,10 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    implementation(libs.java.gson)
-    implementation(baselibs.java.text.base)
+    implementation(privateLibJava.text.base)
+    implementation(libJava.gson)
 
-    testImplementation(libs.java.junit.jupiter)
+    testImplementation(libJava.junit5.jupiter)
 }
 
 publishing {
