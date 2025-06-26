@@ -1,7 +1,11 @@
 package net.bi4vmr.tool.java.security.digest;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Locale;
 
 /**
  * 消息摘要工具。
@@ -10,79 +14,203 @@ import java.security.MessageDigest;
  */
 public class MessageDigestUtil {
 
-    /* 消息摘要算法名称 */
-    /**
-     * JDK内置算法：MD5
+    /*
+     * ----- 输入参数为数组 -----
      */
-    public static String ALGO_MD5 = "MD5";
 
     /**
-     * JDK内置算法：SHA-1
+     * 获取消息摘要。
+     *
+     * @param algo 算法，请选择 {@link DigestAlgos} 中的枚举常量。
+     * @param data 原始数据。
+     * @return 消息摘要（非空，罕见的情况下可能返回空字符串）。
      */
-    public static String ALGO_SHA1 = "SHA";
+    public static String getMessageDigest(DigestAlgos algo, byte[] data) {
+        String result = "";
 
-    /**
-     * JDK内置算法：SHA-256
-     */
-    public static String ALGO_SHA256 = "SHA-256";
+        try {
+            // 获取消息摘要工具实例
+            MessageDigest md = MessageDigest.getInstance(algo.getStandardName());
+            // 获取消息摘要内容
+            byte[] bytes = md.digest(data);
+            // 将消息摘要转为16进制表示
+            StringBuilder builder = new StringBuilder();
+            for (byte num : bytes) {
+                // 将数值与 `0x100` 进行或运算后，统一为 `1` 开头的三位数，便于后续步骤进行截取。
+                String hex = Integer.toHexString((num & 0xFF) | 0x100);
+                builder.append(hex, 1, 3);
+            }
+            result = builder.toString().toUpperCase(Locale.ROOT);
+        } catch (Exception e) {
+            // 通常不会执行至此处，因为该方法只接受JDK支持的算法。
+            System.err.println("Get message digest failed! Reason:[" + e.getMessage() + "]");
+        }
+
+        return result;
+    }
 
     /**
      * 获取MD5消息摘要。
      *
      * @param data 原始数据。
-     * @return MD5结果。
+     * @return 消息摘要（非空，罕见的情况下可能返回空字符串）。
      */
-    public static String getMD5(String data) {
-        return getMessageDigest(ALGO_MD5, data);
+    public static String getMD5(byte[] data) {
+        return getMessageDigest(DigestAlgos.MD5, data);
     }
 
     /**
      * 获取SHA-1消息摘要。
      *
      * @param data 原始数据。
-     * @return SHA-1结果。
+     * @return 消息摘要（非空，罕见的情况下可能返回空字符串）。
      */
-    public static String getSHA1(String data) {
-        return getMessageDigest(ALGO_SHA1, data);
+    public static String getSHA1(byte[] data) {
+        return getMessageDigest(DigestAlgos.SHA_1, data);
     }
 
     /**
      * 获取SHA-256消息摘要。
      *
      * @param data 原始数据。
-     * @return SHA-256结果。
+     * @return 消息摘要（非空，罕见的情况下可能返回空字符串）。
      */
-    public static String getSHA256(String data) {
-        return getMessageDigest(ALGO_SHA256, data);
+    public static String getSHA256(byte[] data) {
+        return getMessageDigest(DigestAlgos.SHA_256, data);
     }
+
+    /*
+     * ----- 输入参数为文本 -----
+     */
 
     /**
      * 获取消息摘要。
      * <p>
-     * 获取消息摘要，如果传入的算法当前JVM不支持，将会返回空值。
+     * 将以UTF-8编码将输入的字符串转换为二进制数据。
      *
-     * @param algo 摘要算法，可以填写本类中以"ALGO"开头的常量，也可以填写自定义算法名称。
-     * @param data 原始数据。
-     * @return 消息摘要文本，可能为空值。
+     * @param algo 算法，请选择 {@link DigestAlgos} 中的枚举常量。
+     * @param text 原始数据。
+     * @return 消息摘要（非空，罕见的情况下可能返回空字符串）。
      */
-    public static String getMessageDigest(String algo, String data) {
-        String result = null;
+    public static String getMessageDigest(DigestAlgos algo, String text) {
+        return getMessageDigest(algo, text.getBytes(StandardCharsets.UTF_8));
+    }
 
-        try {
+    /**
+     * 获取MD5消息摘要。
+     *
+     * @param text 原始数据。
+     * @return 消息摘要（非空，罕见的情况下可能返回空字符串）。
+     */
+    public static String getMD5(String text) {
+        return getMessageDigest(DigestAlgos.MD5, text);
+    }
+
+    /**
+     * 获取SHA-1消息摘要。
+     *
+     * @param text 原始数据。
+     * @return 消息摘要（非空，罕见的情况下可能返回空字符串）。
+     */
+    public static String getSHA1(String text) {
+        return getMessageDigest(DigestAlgos.SHA_1, text);
+    }
+
+    /**
+     * 获取SHA-256消息摘要。
+     *
+     * @param text 原始数据。
+     * @return 消息摘要（非空，罕见的情况下可能返回空字符串）。
+     */
+    public static String getSHA256(String text) {
+        return getMessageDigest(DigestAlgos.SHA_256, text);
+    }
+
+    /*
+     * ----- 输入参数为文件 -----
+     */
+
+    /**
+     * 获取消息摘要。
+     * <p>
+     * 采用分批读取文件内容的方法进行计算，防止文件过大时导致内存溢出。
+     *
+     * @param algo 算法，请选择 {@link DigestAlgos} 中的枚举常量。
+     * @param file 目标文件。
+     * @return 消息摘要（非空，文件不存在/不可读等情况下将返回空字符串）。
+     */
+    public static String getMessageDigest(DigestAlgos algo, File file) {
+        String result = "";
+
+        try (
+                FileInputStream fis = new FileInputStream(file);
+                BufferedInputStream bis = new BufferedInputStream(fis);
+        ) {
             // 获取消息摘要工具实例
-            MessageDigest md = MessageDigest.getInstance(algo);
-            // 获取消息摘要内容
-            byte[] bytes = md.digest(data.getBytes(StandardCharsets.UTF_8));
-            // 将消息摘要转为16进制表示
-            StringBuilder sb = new StringBuilder();
-            for (byte num : bytes) {
-                sb.append(Integer.toHexString((num & 0xFF) | 0x100), 1, 3);
+            MessageDigest md = MessageDigest.getInstance(algo.getStandardName());
+            // 文件缓冲区默认8M
+            byte[] buffer = new byte[8 * 1024 * 1024];
+            while (true) {
+                int count = bis.read(buffer);
+                if (count != -1) {
+                    // 追加数据，更新计算结果。
+                    md.update(buffer, 0, count);
+                } else {
+                    break;
+                }
             }
-            result = sb.toString().toUpperCase();
+
+            // 获取消息摘要内容
+            byte[] bytes = md.digest();
+            // 将消息摘要转为16进制表示
+            StringBuilder builder = new StringBuilder();
+            for (byte num : bytes) {
+                // 将数值与 `0x100` 进行或运算后，统一为 `1` 开头的三位数，便于后续步骤进行截取。
+                String hex = Integer.toHexString((num & 0xFF) | 0x100);
+                builder.append(hex, 1, 3);
+            }
+            result = builder.toString().toUpperCase(Locale.ROOT);
         } catch (Exception e) {
-            e.printStackTrace();
+            // 通常不会执行至此处，因为该方法只接受JDK支持的算法。
+            System.err.println("Get message digest failed! Reason:[" + e.getMessage() + "]");
         }
 
         return result;
+    }
+
+    /**
+     * 获取MD5消息摘要。
+     * <p>
+     * 采用分批读取文件内容的方法进行计算，防止文件过大时导致内存溢出。
+     *
+     * @param file 目标文件。
+     * @return 消息摘要（非空，文件不存在/不可读等情况下将返回空字符串）。
+     */
+    public static String getMD5(File file) {
+        return getMessageDigest(DigestAlgos.MD5, file);
+    }
+
+    /**
+     * 获取SHA-1消息摘要。
+     * <p>
+     * 采用分批读取文件内容的方法进行计算，防止文件过大时导致内存溢出。
+     *
+     * @param file 目标文件。
+     * @return 消息摘要（非空，文件不存在/不可读等情况下将返回空字符串）。
+     */
+    public static String getSHA1(File file) {
+        return getMessageDigest(DigestAlgos.SHA_1, file);
+    }
+
+    /**
+     * 获取SHA-256消息摘要。
+     * <p>
+     * 采用分批读取文件内容的方法进行计算，防止文件过大时导致内存溢出。
+     *
+     * @param file 目标文件。
+     * @return 消息摘要（非空，文件不存在/不可读等情况下将返回空字符串）。
+     */
+    public static String getSHA256(File file) {
+        return getMessageDigest(DigestAlgos.SHA_256, file);
     }
 }
