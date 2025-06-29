@@ -1,6 +1,7 @@
-val mvnGroupID: String = "net.bi4vmr.tool.java"
-val mvnArtifactID: String = "common-base"
-val mvnVersion: String = "1.0.0"
+val depInTOML: MinimalExternalModuleDependency = privateLibJava.common.base.get()
+val mvnGroupID: String = requireNotNull(depInTOML.group)
+val mvnArtifactID: String = depInTOML.name
+val mvnVersion: String = requireNotNull(depInTOML.version)
 
 plugins {
     id("java-library")
@@ -23,8 +24,6 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    implementation(privateLibJava.math.base)
-
     // JUnit5 BOM版本配置文件
     testImplementation(platform(libJava.junit5.bom))
     // JUnit5 平台启动器
@@ -74,21 +73,4 @@ publishing {
             }
         }
     }
-}
-
-/**
- * 配置发布任务之间的依赖关系。
- *
- * 当前模块依赖某个模块，因此发布当前模块时，必须先发布被依赖的模块。
- *
- * "dependsOn()"方法指定了执行该任务时需要同时执行指定任务；"mustRunAfter()"方法则指定了该任务需要在指定任务完成后开始执行。
- */
-tasks.named("publish") {
-    dependsOn(":lib_math:base:publish")
-    mustRunAfter(":lib_math:base:publish")
-}
-
-tasks.named("publishToMavenLocal") {
-    dependsOn(":lib_math:base:publishToMavenLocal")
-    mustRunAfter(":lib_math:base:publishToMavenLocal")
 }

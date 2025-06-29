@@ -45,15 +45,15 @@ includeBuild("plugin")
 // 公共组件
 include(":lib_common:base")
 
+// 序列化
+include(":lib_serial:basecode")
+include(":lib_serial:gson")
+
 // 输入输出
 include(":lib_io:base")
 
 // 数据存储
 include(":lib_storage:file")
-
-// 文本处理
-include(":lib_text:base")
-include(":lib_text:gson")
 
 // 数学运算
 include(":lib_math:base")

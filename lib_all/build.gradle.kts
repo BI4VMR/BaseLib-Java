@@ -9,11 +9,11 @@ plugins {
 
 dependencies {
     implementation(privateLibJava.common.base)
+    implementation(privateLibJava.math.base)
+    implementation(privateLibJava.serial.basecode)
+    implementation(privateLibJava.serial.gson)
     implementation(privateLibJava.io.base)
     implementation(privateLibJava.storage.file)
-    implementation(privateLibJava.text.base)
-    implementation(privateLibJava.text.gson)
-    implementation(privateLibJava.math.base)
     implementation(privateLibJava.security.digest)
 }
 

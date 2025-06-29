@@ -1,7 +1,5 @@
 package net.bi4vmr.tool.java.common.base;
 
-import net.bi4vmr.tool.java.math.base.NumberUtil;
-
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

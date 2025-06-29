@@ -1,6 +1,7 @@
-val mvnGroupID: String = "net.bi4vmr.tool.java"
-val mvnArtifactID: String = "storage-file"
-val mvnVersion: String = "1.0.0"
+val depInTOML: MinimalExternalModuleDependency = privateLibJava.storage.file.get()
+val mvnGroupID: String = requireNotNull(depInTOML.group)
+val mvnArtifactID: String = depInTOML.name
+val mvnVersion: String = requireNotNull(depInTOML.version)
 
 plugins {
     id("java-library")
@@ -24,9 +25,14 @@ tasks.withType<Test> {
 
 dependencies {
     implementation(privateLibJava.io.base)
-    implementation(privateLibJava.text.base)
-    implementation(privateLibJava.math.base)
+    // implementation(privateLibJava.text.base)
+    // implementation(privateLibJava.math.base)
 
+    // JUnit5 BOM版本配置文件
+    testImplementation(platform(libJava.junit5.bom))
+    // JUnit5 平台启动器
+    testImplementation(libJava.junit5.launcher)
+    // Jupiter（JUnit5引擎的实现）
     testImplementation(libJava.junit5.jupiter)
 }
 
@@ -82,7 +88,7 @@ publishing {
  */
 tasks.named("publish") {
     val name = "publishToMavenLocal"
-    val depTasks: Array<String> = arrayOf(":lib_io:base:$name", ":lib_text:base:$name", ":lib_math:base:$name")
+    val depTasks: Array<String> = arrayOf(":lib_io:base:$name", ":lib_common:base:$name", ":lib_math:base:$name")
 
     dependsOn(*depTasks)
     mustRunAfter(*depTasks)
@@ -90,7 +96,7 @@ tasks.named("publish") {
 
 tasks.named("publishToMavenLocal") {
     val name = "publishToMavenLocal"
-    val depTasks: Array<String> = arrayOf(":lib_io:base:$name", ":lib_text:base:$name", ":lib_math:base:$name")
+    val depTasks: Array<String> = arrayOf(":lib_io:base:$name", ":lib_common:base:$name", ":lib_math:base:$name")
 
     dependsOn(*depTasks)
     mustRunAfter(*depTasks)

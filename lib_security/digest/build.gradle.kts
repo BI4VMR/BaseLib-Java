@@ -1,6 +1,7 @@
-val mvnGroupID: String = "net.bi4vmr.tool.java"
-val mvnArtifactID: String = "security-digest"
-val mvnVersion: String = "1.0.0"
+val depInTOML: MinimalExternalModuleDependency = privateLibJava.security.digest.get()
+val mvnGroupID: String = requireNotNull(depInTOML.group)
+val mvnArtifactID: String = depInTOML.name
+val mvnVersion: String = requireNotNull(depInTOML.version)
 
 plugins {
     id("java-library")

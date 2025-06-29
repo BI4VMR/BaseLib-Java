@@ -1,6 +1,6 @@
 package net.bi4vmr.tool.java.io.base;
 
-import net.bi4vmr.tool.java.math.base.NumberUtil;
+import net.bi4vmr.tool.java.common.base.NumberUtil;
 
 import java.io.File;
 import java.io.IOException;
