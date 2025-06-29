@@ -2,9 +2,7 @@ package net.bi4vmr.tool.java.io.base;
 
 import net.bi4vmr.tool.java.common.base.NumberUtil;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.util.Arrays;
 
 /**
@@ -147,5 +145,90 @@ public class FileIOUtil extends IOUtil {
     public static String readAsHexText(File file, int offset, int length) {
         byte[] datas = readAsBytes(file, offset, length);
         return NumberUtil.toHexString(datas);
+    }
+
+    /**
+     * 读取二进制数据。
+     * <p>
+     * 该方法将从文件起始位置开始，读取最多{@link Integer#MAX_VALUE}字节的数据，文件体积较大时需要注意内存占用问题。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也容易导
+     * 致内存溢出。对于此类需求，调用者可以分块读取文件并进行处理。
+     *
+     * @param fd 目标文件。
+     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
+     */
+    public static byte[] readAsBytes(FileDescriptor fd) {
+        return readAsBytes(fd, 0, Integer.MAX_VALUE);
+    }
+
+    /**
+     * 读取二进制数据。
+     * <p>
+     * 该方法将从文件起始位置开始，读取第二参数"length"指定长度的数据。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也容易导
+     * 致内存溢出。对于此类需求，调用者可以分块读取文件并进行处理。
+     *
+     * @param fd     目标文件。
+     * @param length 读取字节数。
+     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
+     */
+    public static byte[] readAsBytes(FileDescriptor fd, int length) {
+        return readAsBytes(fd, 0, length);
+    }
+
+    /**
+     * 读取二进制数据。
+     * <p>
+     * 该方法将从第二参数"offset"指定位置开始，读取第三参数"length"指定长度的数据。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也容易导
+     * 致内存溢出。对于此类需求，调用者可以分块读取文件并进行处理。
+     *
+     * @param fd     文件描述符。
+     * @param offset 起始位置（从0开始计数）。
+     * @param length 读取字节数。
+     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
+     */
+    public static byte[] readAsBytes(FileDescriptor fd, long offset, int length) {
+        byte[] empty = new byte[]{};
+
+        // 校验文件描述符是否可用
+        if (!fd.valid()) {
+            return empty;
+        }
+
+        // 校验输入参数的合法性
+        if (offset < 0 || length < 0) {
+            return empty;
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[8 * 1024 * 1024];
+        FileInputStream fis;
+        BufferedInputStream bis = null;
+        try {
+            fis = new FileInputStream(fd);
+            bis = new BufferedInputStream(fis);
+            bis.skip(offset);
+            while (true) {
+                int count = bis.read(buffer);
+                if (count == -1) {
+                    break;
+                }
+
+                baos.write(buffer, 0, count);
+            }
+
+            return buffer;
+        } catch (IOException e) {
+            System.err.println("Read file as bytes failed! Reason:[" + e.getMessage() + "]");
+            e.printStackTrace();
+        } finally {
+            IOUtil.closeSilently(bis);
+        }
+
+        return empty;
     }
 }
