@@ -77,9 +77,9 @@ public class FileIOUtil extends IOUtil {
         }
 
         byte[] buffer = new byte[length];
-        RandomAccessFile accessor = null;
-        try {
-            accessor = new RandomAccessFile(file, "r");
+        try (
+                RandomAccessFile accessor = new RandomAccessFile(file, "r");
+        ) {
             accessor.seek(offset);
             int count = accessor.read(buffer);
             // 如果实际读取的数据长度小于目标长度，则截取有效元素。
@@ -91,8 +91,6 @@ public class FileIOUtil extends IOUtil {
         } catch (IOException e) {
             System.err.println("Read file as bytes failed! Reason:[" + e.getMessage() + "]");
             e.printStackTrace();
-        } finally {
-            IOUtil.closeSilently(accessor);
         }
 
         return empty;
@@ -206,12 +204,18 @@ public class FileIOUtil extends IOUtil {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[8 * 1024 * 1024];
-        FileInputStream fis;
-        BufferedInputStream bis = null;
-        try {
-            fis = new FileInputStream(fd);
-            bis = new BufferedInputStream(fis);
+        try (
+                FileInputStream fis = new FileInputStream(fd);
+                BufferedInputStream bis = new BufferedInputStream(fis);
+        ) {
+            long total = bis.available();
+            long valid = total - offset;
+            // 如果偏移量大于文件总长度，说明已经没有数据可供读取了，直接返回空数组。
+            if (valid <= 0) {
+                return empty;
+            }
             bis.skip(offset);
+
             while (true) {
                 int count = bis.read(buffer);
                 if (count == -1) {
@@ -221,12 +225,10 @@ public class FileIOUtil extends IOUtil {
                 baos.write(buffer, 0, count);
             }
 
-            return buffer;
+            return baos.toByteArray();
         } catch (IOException e) {
             System.err.println("Read file as bytes failed! Reason:[" + e.getMessage() + "]");
             e.printStackTrace();
-        } finally {
-            IOUtil.closeSilently(bis);
         }
 
         return empty;
