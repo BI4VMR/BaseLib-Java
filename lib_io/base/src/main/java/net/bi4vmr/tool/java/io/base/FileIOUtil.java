@@ -8,7 +8,8 @@ import java.util.Arrays;
 /**
  * 文件输入与输出工具。
  *
- * @author BI4VMR@outlook.com
+ * @author bi4vmr@outlook.com
+ * @since 1.0.0
  */
 public class FileIOUtil extends IOUtil {
 
@@ -206,7 +207,7 @@ public class FileIOUtil extends IOUtil {
         byte[] buffer = new byte[8 * 1024 * 1024];
         try (
                 FileInputStream fis = new FileInputStream(fd);
-                BufferedInputStream bis = new BufferedInputStream(fis);
+                BufferedInputStream bis = new BufferedInputStream(fis, buffer.length)
         ) {
             long total = bis.available();
             long valid = total - offset;
