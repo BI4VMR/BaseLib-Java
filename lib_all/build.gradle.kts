@@ -2,9 +2,10 @@ val mvnGroupID: String = "net.bi4vmr.tool.java"
 val mvnArtifactID: String = "all"
 val mvnVersion: String = "1.0.0"
 
+
 plugins {
-    id("java-library")
-    id("maven-publish")
+    id(libJava.plugins.java.library.get().pluginId)
+    id(libJava.plugins.maven.publish.get().pluginId)
 }
 
 dependencies {

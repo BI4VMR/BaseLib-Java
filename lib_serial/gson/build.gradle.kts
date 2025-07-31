@@ -5,8 +5,8 @@ val mvnVersion: String = requireNotNull(depInTOML.version)
 
 
 plugins {
-    id("java-library")
-    id("maven-publish")
+    id(libJava.plugins.java.library.get().pluginId)
+    id(libJava.plugins.maven.publish.get().pluginId)
 }
 
 java {
@@ -25,9 +25,9 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    implementation(privateLibJava.common.base)
+    api(privateLibJava.common.base)
 
-    implementation(libJava.gson)
+    api(libJava.gson)
 
     // JUnit5 BOM版本配置文件
     testImplementation(platform(libJava.junit5.bom))

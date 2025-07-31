@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    id(libJava.plugins.java.library.get().pluginId)
 }
 
 tasks.withType<Test> {

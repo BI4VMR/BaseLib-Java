@@ -3,9 +3,10 @@ val mvnGroupID: String = requireNotNull(depInTOML.group)
 val mvnArtifactID: String = depInTOML.name
 val mvnVersion: String = requireNotNull(depInTOML.version)
 
+
 plugins {
-    id("java-library")
-    id("maven-publish")
+    id(libJava.plugins.java.library.get().pluginId)
+    id(libJava.plugins.maven.publish.get().pluginId)
 }
 
 java {
