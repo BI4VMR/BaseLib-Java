@@ -25,8 +25,6 @@ tasks.withType<Test> {
 
 dependencies {
     implementation(privateLibJava.io.base)
-    // implementation(privateLibJava.text.base)
-    // implementation(privateLibJava.math.base)
 
     // JUnit5 BOM版本配置文件
     testImplementation(platform(libJava.junit5.bom))
