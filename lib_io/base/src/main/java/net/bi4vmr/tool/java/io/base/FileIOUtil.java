@@ -234,4 +234,49 @@ public class FileIOUtil extends IOUtil {
 
         return empty;
     }
+
+    /**
+     * 将文件描述符所指代的数据复制到文件。
+     * <p>
+     * 操作完毕后文件描述符会被关闭；缓冲区容量默认为8KB。
+     *
+     * @param fd   文件描述符。
+     * @param dest 目标文件。
+     */
+    public static void copyToFile(FileDescriptor fd, File dest) {
+        copyToFile(fd, dest, DEFAULT_BUFFER_SIZE);
+    }
+
+    /**
+     * 将文件描述符所指代的数据复制到文件。
+     * <p>
+     * 操作完毕后文件描述符会被关闭。
+     *
+     * @param fd         文件描述符。
+     * @param dest       目标文件。
+     * @param bufferSize 缓冲区大小（字节）。
+     */
+    public static void copyToFile(FileDescriptor fd, File dest, int bufferSize) {
+        // 校验输入参数的合法性
+        if (bufferSize <= 0) {
+            return;
+        }
+
+        try (
+                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fd), bufferSize);
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dest), bufferSize)
+        ) {
+            byte[] buffer = new byte[bufferSize];
+            while (true) {
+                int count = bis.read(buffer);
+                if (count == -1) {
+                    break;
+                }
+                bos.write(buffer, 0, count);
+            }
+        } catch (IOException e) {
+            System.err.println("Copy data failed! Reason:[" + e.getMessage() + "]");
+            e.printStackTrace();
+        }
+    }
 }

@@ -3,12 +3,58 @@ package net.bi4vmr.tool.java.io.base;
 import java.io.Closeable;
 
 /**
- * 输入与输出工具。
+ * 通用输入与输出工具。
  *
  * @author bi4vmr@outlook.com
  * @since 1.0.0
  */
 public class IOUtil {
+
+    /**
+     * 默认的缓冲区大小。
+     */
+    protected final static int DEFAULT_BUFFER_SIZE = 8 * 1024;
+
+    /**
+     * 常用缓冲区大小：8KB。
+     */
+    public final static int BUFFER_SIZE_8KB = 8 * 1024;
+
+    /**
+     * 常用缓冲区大小：128KB。
+     */
+    public final static int BUFFER_SIZE_128KB = 128 * 1024;
+
+    /**
+     * 常用缓冲区大小：256KB。
+     */
+    public final static int BUFFER_SIZE_256KB = 256 * 1024;
+
+    /**
+     * 常用缓冲区大小：512KB。
+     */
+    public final static int BUFFER_SIZE_512KB = 512 * 1024;
+
+    /**
+     * 常用缓冲区大小：1MB。
+     */
+    public final static int BUFFER_SIZE_1MB = 1024 * 1024;
+
+    /**
+     * 常用缓冲区大小：4MB。
+     */
+    public final static int BUFFER_SIZE_4MB = 4 * 1024 * 1024;
+
+    /**
+     * 常用缓冲区大小：8MB。
+     */
+    public final static int BUFFER_SIZE_8MB = 8 * 1024 * 1024;
+
+    /**
+     * 常用缓冲区大小：32MB。
+     */
+    public final static int BUFFER_SIZE_32MB = 32 * 1024 * 1024;
+
 
     /**
      * 释放资源。

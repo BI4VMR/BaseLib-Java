@@ -13,52 +13,6 @@ import java.nio.charset.StandardCharsets;
 public class BaseIOUtil extends IOUtil {
 
     /**
-     * 默认的缓冲区大小。
-     */
-    private final static int DEFAULT_BUFFER_SIZE = 8 * 1024;
-
-    /**
-     * 常用缓冲区大小：8KB。
-     */
-    public final static int BUFFER_SIZE_8KB = 8 * 1024;
-
-    /**
-     * 常用缓冲区大小：128KB。
-     */
-    public final static int BUFFER_SIZE_128KB = 128 * 1024;
-
-    /**
-     * 常用缓冲区大小：256KB。
-     */
-    public final static int BUFFER_SIZE_256KB = 256 * 1024;
-
-    /**
-     * 常用缓冲区大小：512KB。
-     */
-    public final static int BUFFER_SIZE_512KB = 512 * 1024;
-
-    /**
-     * 常用缓冲区大小：1MB。
-     */
-    public final static int BUFFER_SIZE_1MB = 1024 * 1024;
-
-    /**
-     * 常用缓冲区大小：4MB。
-     */
-    public final static int BUFFER_SIZE_4MB = 4 * 1024 * 1024;
-
-    /**
-     * 常用缓冲区大小：8MB。
-     */
-    public final static int BUFFER_SIZE_8MB = 8 * 1024 * 1024;
-
-    /**
-     * 常用缓冲区大小：32MB。
-     */
-    public final static int BUFFER_SIZE_32MB = 32 * 1024 * 1024;
-
-
-    /**
      * 从输入流读取所有数据并转为文本。
      * <p>
      * 一次性读取流中的所有数据，只适合数据量已知且较小的流，否则会导致内存溢出。
@@ -194,7 +148,7 @@ public class BaseIOUtil extends IOUtil {
     /**
      * 将输入流中的数据保存至文件。
      * <p>
-     * 操作完毕后输入流与目标文件流都会被关闭；缓冲区容量默认为8KB。
+     * 操作完毕后输入流会被关闭；缓冲区容量默认为8KB。
      *
      * @param stream 输入流。
      * @param dest   目标文件。
@@ -206,7 +160,7 @@ public class BaseIOUtil extends IOUtil {
     /**
      * 将输入流中的数据保存至文件。
      * <p>
-     * 操作完毕后输入流与目标文件流都会被关闭。
+     * 操作完毕后输入流会被关闭。
      *
      * @param stream     输入流。
      * @param dest       目标文件。
@@ -220,7 +174,7 @@ public class BaseIOUtil extends IOUtil {
 
         try (
                 BufferedInputStream bis = new BufferedInputStream(stream, bufferSize);
-                FileOutputStream fos = new FileOutputStream(dest)
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dest), bufferSize)
         ) {
             byte[] buffer = new byte[bufferSize];
             while (true) {
@@ -228,10 +182,10 @@ public class BaseIOUtil extends IOUtil {
                 if (count == -1) {
                     break;
                 }
-                fos.write(buffer, 0, count);
+                bos.write(buffer, 0, count);
             }
         } catch (IOException e) {
-            System.err.println("Read file as bytes failed! Reason:[" + e.getMessage() + "]");
+            System.err.println("Copy data failed! Reason:[" + e.getMessage() + "]");
             e.printStackTrace();
         }
     }
