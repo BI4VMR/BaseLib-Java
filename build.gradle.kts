@@ -2,6 +2,7 @@
 plugins {
     alias(privateLibJava.plugins.repo.private).apply(false)
     alias(privateLibJava.plugins.repo.public).apply(false)
+    alias(privateLibJava.plugins.publish.private).apply(false)
 }
 
 val pluginMavenRepoPrivate: String = privateLibJava.plugins.repo.private.get().pluginId

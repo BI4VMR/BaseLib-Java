@@ -63,6 +63,3 @@ include(":lib_security:digest")
 
 // 模板代码
 include(":lib_template:base")
-
-// 依赖传递
-include(":lib_all")
