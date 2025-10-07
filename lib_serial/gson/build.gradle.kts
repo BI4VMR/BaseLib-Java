@@ -9,16 +9,6 @@ plugins {
     id(privateLibJava.plugins.publish.private.get().pluginId)
 }
 
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
-
-tasks.withType<Javadoc> {
-    // 指定JavaDoc编码，解决系统编码与文件不一致导致错误。
-    options.encoding = "UTF-8"
-}
-
 tasks.withType<Test> {
     // 连接Gradle测试任务与JUnit工具
     useJUnitPlatform()
