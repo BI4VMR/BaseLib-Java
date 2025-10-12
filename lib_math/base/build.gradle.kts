@@ -6,6 +6,8 @@ val mvnVersion: String = requireNotNull(depInTOML.version)
 
 plugins {
     id(libJava.plugins.java.library.get().pluginId)
+    id(privateLibJava.plugins.repo.private.get().pluginId)
+    id(privateLibJava.plugins.repo.public.get().pluginId)
     id(privateLibJava.plugins.publish.private.get().pluginId)
 }
 

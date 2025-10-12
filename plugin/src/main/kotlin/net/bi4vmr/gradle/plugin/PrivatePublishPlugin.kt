@@ -1,6 +1,8 @@
 package net.bi4vmr.gradle.plugin
 
+import net.bi4vmr.gradle.data.MavenRepos
 import net.bi4vmr.gradle.data.Plugins
+import net.bi4vmr.gradle.entity.MavenRepo
 import net.bi4vmr.gradle.util.NetUtil
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -24,17 +26,22 @@ class PrivatePublishPlugin : Plugin<Project> {
         const val NAME: String = "net.bi4vmr.gradle.plugin.maven.publish"
 
         // 全局保存首次网络测试结果，避免每个子模块应用本插件都测试网络导致速度缓慢。
-        private var privateRepoAvailable: Boolean? = null
-        private var localRepoAvailable: Boolean? = null
+        private var netTestResult: MavenRepo? = null
     }
 
     override fun apply(target: Project) {
         // 检查仓库是否可用
-        if (privateRepoAvailable == null) {
-            privateRepoAvailable = NetUtil.scanByTCP("172.16.5.1", 8081)
-        }
-        if (localRepoAvailable == null) {
-            localRepoAvailable = NetUtil.scanByTCP("127.0.0.1", 8081)
+        if (netTestResult == null) {
+            if (NetUtil.scanByTCP("172.16.5.1", 8081)) {
+                log("Current host is in private network, set publish URL to LAN repositories.")
+                netTestResult = MavenRepos.PRIVATE_LAN
+            } else if (NetUtil.scanByTCP("127.0.0.1", 8081)) {
+                log("Current host is not in private network, set publish URL to LOCAL repositories.")
+                netTestResult = MavenRepos.PRIVATE_LOCAL
+            } else {
+                log("Current host is not in private network, can only publish to MAVEN_LOCAL repository.")
+                netTestResult = MavenRepos.PRIVATE_MAVEN_LOCAL
+            }
         }
 
         // 注册扩展
@@ -55,8 +62,8 @@ class PrivatePublishPlugin : Plugin<Project> {
 
                 target.extensions.configure<PublishingExtension> {
                     repositories {
-                        // 私有仓库
-                        if (privateRepoAvailable == true) {
+                        if (netTestResult == MavenRepos.PRIVATE_LAN) {
+                            // 私有仓库
                             maven {
                                 name = "Private"
                                 isAllowInsecureProtocol = true
@@ -66,10 +73,8 @@ class PrivatePublishPlugin : Plugin<Project> {
                                     password = "uploader"
                                 }
                             }
-                        }
-
-                        // 本机仓库
-                        if (localRepoAvailable == true) {
+                        } else if (netTestResult == MavenRepos.PRIVATE_LOCAL) {
+                            // 私有仓库
                             maven {
                                 name = "Local"
                                 isAllowInsecureProtocol = true
@@ -128,5 +133,9 @@ class PrivatePublishPlugin : Plugin<Project> {
                 }
             }
         }
+    }
+
+    private fun log(message: String) {
+        println("PrivatePublishPlugin-$message")
     }
 }

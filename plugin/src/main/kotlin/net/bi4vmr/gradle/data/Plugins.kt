@@ -20,6 +20,8 @@ object Plugins {
 
     const val MAVEN_PUBLISH: String = "maven-publish"
 
+    const val JACOCO: String = "jacoco"
+
     const val PUBLIC_REPO: String = PublicRepoPlugin.NAME
 
     const val PRIVATE_REPO: String = PrivateRepoPlugin.NAME

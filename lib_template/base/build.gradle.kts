@@ -1,5 +1,7 @@
 plugins {
     id(libJava.plugins.java.library.get().pluginId)
+    id(privateLibJava.plugins.repo.private.get().pluginId)
+    id(privateLibJava.plugins.repo.public.get().pluginId)
 }
 
 tasks.withType<Test> {

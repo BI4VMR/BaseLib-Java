@@ -28,13 +28,13 @@ class PrivateRepoPlugin : Plugin<Project> {
         // 如果网络测试结果为空，则先进行测试；否则根据测试结果选择仓库。
         if (netTestResult == null) {
             if (NetUtil.scanByTCP("172.16.5.1", 8081)) {
-                println("Current host is in private network, add LAN repositories.")
+                log("Current host is in private network, add LAN repositories.")
                 netTestResult = MavenRepos.PRIVATE_LAN
             } else if (NetUtil.scanByTCP("127.0.0.1", 8081)) {
-                println("Current host is not in private network, add LOCAL repositories.")
+                log("Current host is not in private network, add LOCAL repositories.")
                 netTestResult = MavenRepos.PRIVATE_LOCAL
             } else {
-                println("Current host is not in private network, add MAVEN_LOCAL repository.")
+                log("Current host is not in private network, add MAVEN_LOCAL repository.")
                 netTestResult = MavenRepos.PRIVATE_MAVEN_LOCAL
             }
 
@@ -58,5 +58,9 @@ class PrivateRepoPlugin : Plugin<Project> {
                 isAllowInsecureProtocol = true
             }
         }
+    }
+
+    private fun log(message: String) {
+        println("PrivateRepoPlugin-$message")
     }
 }
