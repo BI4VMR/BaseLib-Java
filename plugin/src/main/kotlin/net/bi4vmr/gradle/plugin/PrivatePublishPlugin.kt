@@ -3,6 +3,7 @@ package net.bi4vmr.gradle.plugin
 import net.bi4vmr.gradle.data.MavenRepos
 import net.bi4vmr.gradle.data.Plugins
 import net.bi4vmr.gradle.entity.MavenRepo
+import net.bi4vmr.gradle.util.LogUtil
 import net.bi4vmr.gradle.util.NetUtil
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -33,21 +34,22 @@ class PrivatePublishPlugin : Plugin<Project> {
         // 检查仓库是否可用
         if (netTestResult == null) {
             if (NetUtil.scanByTCP("172.16.5.1", 8081)) {
-                log("Current host is in private network, set publish URL to LAN repositories.")
+                LogUtil.info("Current host is in private network, set publish URL to LAN repositories.")
                 netTestResult = MavenRepos.PRIVATE_LAN
             } else if (NetUtil.scanByTCP("127.0.0.1", 8081)) {
-                log("Current host is not in private network, set publish URL to LOCAL repositories.")
+                LogUtil.info("Current host is not in private network, set publish URL to LOCAL repositories.")
                 netTestResult = MavenRepos.PRIVATE_LOCAL
             } else {
-                log("Current host is not in private network, can only publish to MAVEN_LOCAL repository.")
+                LogUtil.info("Current host is not in private network, can only publish to MAVEN_LOCAL repository.")
                 netTestResult = MavenRepos.PRIVATE_MAVEN_LOCAL
             }
         }
 
-        // 注册扩展
-        target.extensions.create(PrivatePublishConfig.NAME, PrivatePublishConfig::class.java)
         // 应用Maven Publish插件
         target.pluginManager.apply(Plugins.MAVEN_PUBLISH)
+
+        // 注册扩展
+        target.extensions.create(PrivatePublishConfig.NAME, PrivatePublishConfig::class.java)
 
         target.plugins.withId(Plugins.MAVEN_PUBLISH) {
             target.afterEvaluate {
@@ -62,27 +64,21 @@ class PrivatePublishPlugin : Plugin<Project> {
 
                 target.extensions.configure<PublishingExtension> {
                     repositories {
-                        if (netTestResult == MavenRepos.PRIVATE_LAN) {
-                            // 私有仓库
-                            maven {
-                                name = "Private"
-                                isAllowInsecureProtocol = true
-                                setUrl("http://172.16.5.1:8081/repository/maven-private/")
-                                credentials {
-                                    username = "uploader"
-                                    password = "uploader"
-                                }
-                            }
-                        } else if (netTestResult == MavenRepos.PRIVATE_LOCAL) {
-                            // 私有仓库
-                            maven {
-                                name = "Local"
-                                isAllowInsecureProtocol = true
-                                setUrl("http://127.0.0.1:8081/repository/maven-private/")
-                                credentials {
-                                    username = "uploader"
-                                    password = "uploader"
-                                }
+                        val repoURL = if (netTestResult == MavenRepos.PRIVATE_LAN) {
+                            // 内网私有仓库
+                            "http://172.16.5.1:8081/repository/maven-private/"
+                        } else {
+                            // 本机内置仓库
+                            "http://127.0.0.1:8081/repository/maven-private/"
+                        }
+
+                        maven {
+                            name = "Private"
+                            isAllowInsecureProtocol = true
+                            setUrl(repoURL)
+                            credentials {
+                                username = "uploader"
+                                password = "uploader"
                             }
                         }
                     }
@@ -96,14 +92,18 @@ class PrivatePublishPlugin : Plugin<Project> {
                             version = ext.version
 
                             // 发布程序包
-                            from(target.components.getByName("java"))
+                            if (target.isAndroidLib()) {
+                                from(components.getByName("release"))
+                            } else {
+                                from(components.getByName("java"))
+                            }
 
                             val projectName: String = target.rootProject.name
 
                             // POM信息
                             pom {
                                 // 打包格式
-                                packaging = "jar"
+                                packaging = if (target.isAndroidLib()) "aar" else "jar"
                                 name.set(ext.artifactID)
                                 url.set("https://github.com/BI4VMR/$projectName")
                                 developers {
@@ -117,17 +117,27 @@ class PrivatePublishPlugin : Plugin<Project> {
                     }
                 }
 
-                target.extensions.configure<JavaPluginExtension> {
-                    if (ext.uploadSources) {
-                        withSourcesJar()
+                // 根据模块类型配置是否上传源码包和文档包
+                if (target.isAndroidLib()) {
+                    /*
+                     * 自从Gradle 7.0开始，Android Library默认会发布源码与文档，且无法在 `afterEvaluate {}` 阶段修改配置，因此无法
+                     * 通过插件的Extensions修改此行为，目前需要用户在 `android {}` 块中手动进行配置。
+                     */
+                    if (!ext.uploadSources || !ext.uploadJavadoc) {
+                        throw IllegalArgumentException("This version of Gradle will upload sources and docs automatically, plugin can not interrupt this behavior, please use `publishing {}` in `android {}` to config manually!")
                     }
+                } else {
+                    target.extensions.configure<JavaPluginExtension> {
+                        if (ext.uploadSources) {
+                            withSourcesJar()
+                        }
+                        if (ext.uploadJavadoc) {
+                            withJavadocJar()
 
-                    if (ext.uploadJavadoc) {
-                        withJavadocJar()
-
-                        // 指定JavaDoc编码，解决系统编码与文件不一致导致错误。
-                        target.tasks.withType(Javadoc::class.java).configureEach {
-                            options.encoding = "UTF-8"
+                            // 指定JavaDoc编码，解决系统编码与文件不一致导致错误。
+                            target.tasks.withType(Javadoc::class.java).configureEach {
+                                options.encoding = "UTF-8"
+                            }
                         }
                     }
                 }
@@ -135,7 +145,8 @@ class PrivatePublishPlugin : Plugin<Project> {
         }
     }
 
-    private fun log(message: String) {
-        println("PrivatePublishPlugin-$message")
+    // 判断当前模块是否为 Android Library 模块
+    private fun Project.isAndroidLib(): Boolean {
+        return plugins.hasPlugin(Plugins.ANDROID_LIBRARY)
     }
 }
