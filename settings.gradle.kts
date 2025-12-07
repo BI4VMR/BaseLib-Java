@@ -58,6 +58,9 @@ include(":lib_storage:file")
 // 数学运算
 include(":lib_math:base")
 
+// 金融工具
+include(":lib_finance:base")
+
 // 信息安全
 include(":lib_security:digest")
 
