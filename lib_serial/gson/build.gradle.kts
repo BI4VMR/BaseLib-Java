@@ -6,6 +6,7 @@ val mvnVersion: String = requireNotNull(depInTOML.version)
 
 plugins {
     id(libJava.plugins.java.library.get().pluginId)
+    id(privateLibJava.plugins.java.version.get().pluginId)
     id(privateLibJava.plugins.repo.private.get().pluginId)
     id(privateLibJava.plugins.repo.public.get().pluginId)
     id(privateLibJava.plugins.publish.private.get().pluginId)
@@ -27,6 +28,10 @@ dependencies {
     testImplementation(libJava.junit5.launcher)
     // Jupiter（JUnit5引擎的实现）
     testImplementation(libJava.junit5.jupiter)
+}
+
+javaVersionConfig {
+    jdkVersion = JavaVersion.VERSION_1_8
 }
 
 privatePublishConfig {
