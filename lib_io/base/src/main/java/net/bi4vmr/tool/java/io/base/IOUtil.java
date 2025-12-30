@@ -11,9 +11,9 @@ import java.io.Closeable;
 public class IOUtil {
 
     /**
-     * 默认的缓冲区大小。
+     * 默认的缓冲区大小：8KB。
      */
-    protected final static int DEFAULT_BUFFER_SIZE = 8 * 1024;
+    protected final static int BUFFER_SIZE_DEFAULT = 8 * 1024;
 
     /**
      * 常用缓冲区大小：8KB。

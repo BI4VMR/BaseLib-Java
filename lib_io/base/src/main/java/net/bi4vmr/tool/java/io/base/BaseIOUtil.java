@@ -3,6 +3,9 @@ package net.bi4vmr.tool.java.io.base;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 基本输入与输出工具。
@@ -12,74 +15,38 @@ import java.nio.charset.StandardCharsets;
  */
 public class BaseIOUtil extends IOUtil {
 
-    /**
-     * 从输入流读取所有数据并转为文本。
-     * <p>
-     * 一次性读取流中的所有数据，只适合数据量已知且较小的流，否则会导致内存溢出。
-     * <p>
-     * 操作完毕后输入流将被关闭；遇到异常时默认返回空字符串，默认使用8KB缓冲区、UTF-8编码。
-     *
-     * @param stream 输入流。
-     * @return 文本。
+    /*
+     * ----- 从输入流读取文本 -----
      */
-    public static String readAllAsText(InputStream stream) {
-        return readAllAsText(stream, DEFAULT_BUFFER_SIZE, StandardCharsets.UTF_8);
-    }
 
     /**
      * 从输入流读取所有数据并转为文本。
      * <p>
-     * 一次性读取流中的所有数据，只适合数据量已知且较小的流，否则会导致内存溢出。
-     * <p>
-     * 操作完毕后输入流将被关闭；遇到异常时默认返回空字符串，默认使用8KB缓冲区。
-     *
-     * @param stream  输入流。
-     * @param charset 字符集。
-     * @return 文本。
-     */
-    public static String readAllAsText(InputStream stream, Charset charset) {
-        return readAllAsText(stream, DEFAULT_BUFFER_SIZE, charset);
-    }
-
-    /**
-     * 从输入流读取所有数据并转为文本。
-     * <p>
-     * 一次性读取流中的所有数据，只适合数据量已知且较小的流，否则会导致内存溢出。
-     * <p>
-     * 操作完毕后输入流将被关闭；遇到异常时默认返回空字符串，默认使用UTF-8编码。
-     *
-     * @param stream     输入流。
-     * @param bufferSize 缓冲区大小（字节）。
-     * @return 文本。
-     */
-    public static String readAllAsText(InputStream stream, int bufferSize) {
-        return readAllAsText(stream, bufferSize, StandardCharsets.UTF_8);
-    }
-
-    /**
-     * 从输入流读取所有数据并转为文本。
-     * <p>
-     * 一次性读取流中的所有数据，只适合数据量已知且较小的流，否则会导致内存溢出。
+     * 一次性读取流中的所有数据，只适合数据量已知且较小的流，数据量过大可能会导致内存溢出。
      * <p>
      * 操作完毕后输入流将被关闭；遇到异常时默认返回空字符串。
      *
      * @param stream     输入流。
      * @param bufferSize 缓冲区大小（字节）。
      * @param charset    字符集。
-     * @return 文本。
+     * @return 文本内容。
      */
     public static String readAllAsText(InputStream stream, int bufferSize, Charset charset) {
-        final String empty = "";
+        // 校验输入参数
+        if (stream == null) {
+            System.err.println("BaseIOUtil - InputStream is null!");
+            return "";
+        }
 
-        // 校验输入参数的合法性
         if (bufferSize <= 0) {
-            return empty;
+            System.err.println("BaseIOUtil - Buffer size must > 0!");
+            return "";
         }
 
         StringBuilder stringBuilder = new StringBuilder();
         try (
-                InputStreamReader isr = new InputStreamReader(stream, charset);
-                BufferedReader reader = new BufferedReader(isr, bufferSize)
+                InputStreamReader streamReader = new InputStreamReader(stream, charset);
+                BufferedReader reader = new BufferedReader(streamReader, bufferSize)
         ) {
             while (true) {
                 String line = reader.readLine();
@@ -93,100 +60,222 @@ public class BaseIOUtil extends IOUtil {
 
             return stringBuilder.toString();
         } catch (IOException e) {
-            System.err.println("Read file as text failed! Reason:[" + e.getMessage() + "]");
-            e.printStackTrace();
+            System.err.println("BaseIOUtil - Read file as text failed! Reason:[" + e.getMessage() + "]");
         }
 
-        return empty;
+        return "";
     }
 
     /**
-     * 从输入流读取所有数据。
+     * 从输入流读取所有数据并转为文本。
      * <p>
-     * 一次性读取流中的所有数据，只适合数据量已知且较小的流，否则会导致内存溢出。
+     * 一次性读取流中的所有数据，只适合数据量已知且较小的流，数据量过大可能会导致内存溢出。
      * <p>
-     * 操作完毕后输入流将被关闭；遇到异常时默认返回空数组；缓冲区容量默认为8KB。
-     *
-     * @param stream 输入流。
-     * @return 字节数组。
-     */
-    public static byte[] readAllBytes(InputStream stream) {
-        return readAllBytes(stream, DEFAULT_BUFFER_SIZE);
-    }
-
-    /**
-     * 从输入流读取所有数据。
-     * <p>
-     * 一次性读取流中的所有数据，只适合数据量已知且较小的流，否则会导致内存溢出。
-     * <p>
-     * 操作完毕后输入流将被关闭；遇到异常时默认返回空数组。
+     * 操作完毕后输入流将被关闭；遇到异常时默认返回空字符串；默认使用"UTF-8"编码。
      *
      * @param stream     输入流。
      * @param bufferSize 缓冲区大小（字节）。
+     * @return 文本内容。
+     */
+    public static String readAllAsText(InputStream stream, int bufferSize) {
+        return readAllAsText(stream, bufferSize, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * 从输入流读取所有数据并转为文本。
+     * <p>
+     * 一次性读取流中的所有数据，只适合数据量已知且较小的流，数据量过大可能会导致内存溢出。
+     * <p>
+     * 操作完毕后输入流将被关闭；遇到异常时默认返回空字符串，默认使用"8KB"缓冲区。
+     *
+     * @param stream  输入流。
+     * @param charset 字符集。
+     * @return 文本内容。
+     */
+    public static String readAllAsText(InputStream stream, Charset charset) {
+        return readAllAsText(stream, BUFFER_SIZE_DEFAULT, charset);
+    }
+
+    /**
+     * 从输入流读取所有数据并转为文本。
+     * <p>
+     * 一次性读取流中的所有数据，只适合数据量已知且较小的流，数据量过大可能会导致内存溢出。
+     * <p>
+     * 操作完毕后输入流将被关闭；遇到异常时默认返回空字符串；默认使用"UTF-8"编码及"8KB"缓冲区。
+     *
+     * @param stream 输入流。
+     * @return 文本内容。
+     */
+    public static String readAllAsText(InputStream stream) {
+        return readAllAsText(stream, BUFFER_SIZE_DEFAULT, StandardCharsets.UTF_8);
+    }
+
+
+    /*
+     * ----- 从输入流读取二进制数据 -----
+     */
+
+    /**
+     * 从输入流读取二进制数据。
+     * <p>
+     * 该方法将从第二参数"offset"指定位置开始，读取第三参数"length"指定长度的数据。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
+     *
+     * @param stream     输入流。
+     * @param offset     起始位置（从0开始计数）。
+     * @param length     读取字节数。
+     * @param bufferSize 缓冲区大小（字节）。
      * @return 字节数组。
      */
-    public static byte[] readAllBytes(InputStream stream, int bufferSize) {
-        byte[] empty = new byte[]{};
+    public static byte[] readAsBytes(InputStream stream, long offset, int length, int bufferSize) {
+        // 校验输入参数
+        if (stream == null) {
+            System.err.println("BaseIOUtil - InputStream is null!");
+            return new byte[0];
+        }
 
-        // 校验输入参数的合法性
-        if (bufferSize <= 0) {
-            return empty;
+        if (offset < 0L || length <= 0 || bufferSize <= 0) {
+            System.err.println("BaseIOUtil - Offset or length value invalid!");
+            return new byte[0];
         }
 
         try (
                 BufferedInputStream bis = new BufferedInputStream(stream, bufferSize)
         ) {
-            return bis.readAllBytes();
-        } catch (IOException e) {
-            System.err.println("Read file as bytes failed! Reason:[" + e.getMessage() + "]");
-            e.printStackTrace();
-        }
+            // 忽略指定长度的数据
+            if (offset > 0L) {
+                long skipped = 0;
+                while (skipped < offset) {
+                    long count = bis.skip(offset - skipped);
+                    if (count <= 0) {
+                        // 跳过操作失败，检测是否已到达末尾。
+                        if (bis.read() == -1) {
+                            return new byte[0];
+                        }
 
-        return empty;
-    }
+                        skipped++;
+                    } else {
+                        // 跳过操作成功，累计偏移量。
+                        skipped += count;
+                    }
+                }
+            }
 
-    /**
-     * 将输入流中的数据保存至文件。
-     * <p>
-     * 操作完毕后输入流会被关闭；缓冲区容量默认为8KB。
-     *
-     * @param stream 输入流。
-     * @param dest   目标文件。
-     */
-    public static void copyToFile(InputStream stream, File dest) {
-        copyToFile(stream, dest, DEFAULT_BUFFER_SIZE);
-    }
-
-    /**
-     * 将输入流中的数据保存至文件。
-     * <p>
-     * 操作完毕后输入流会被关闭。
-     *
-     * @param stream     输入流。
-     * @param dest       目标文件。
-     * @param bufferSize 缓冲区大小（字节）。
-     */
-    public static void copyToFile(InputStream stream, File dest, int bufferSize) {
-        // 校验输入参数的合法性
-        if (bufferSize <= 0) {
-            return;
-        }
-
-        try (
-                BufferedInputStream bis = new BufferedInputStream(stream, bufferSize);
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dest), bufferSize)
-        ) {
+            List<byte[]> result = new ArrayList<>();
             byte[] buffer = new byte[bufferSize];
-            while (true) {
-                int count = bis.read(buffer);
+            int remaining = length;
+            while (remaining > 0) {
+                // 当前轮次读取的数量为缓冲区容量和剩余数量中较小的一个
+                int readCount = Math.min(bufferSize, remaining);
+                int count = bis.read(buffer, 0, readCount);
+                // 如果读取方法返回负数，表示已到文件末尾。
                 if (count == -1) {
                     break;
                 }
-                bos.write(buffer, 0, count);
+
+                if (count > 0) {
+                    // 将读取到的数据添加到结果列表中
+                    result.add(Arrays.copyOfRange(buffer, 0, count));
+                    // 更新剩余的数据量
+                    remaining -= count;
+                }
             }
+
+            // 将每轮读取到的数据合并为单个数组
+            return mergeByteArrayList(result);
         } catch (IOException e) {
-            System.err.println("Copy data failed! Reason:[" + e.getMessage() + "]");
-            e.printStackTrace();
+            System.err.println("BaseIOUtil - Read file as bytes failed! Reason:[" + e.getMessage() + "]");
         }
+
+        return new byte[0];
+    }
+
+    /**
+     * 从输入流读取二进制数据。
+     * <p>
+     * 该方法将从第二参数"offset"指定位置开始，读取第三参数"length"指定长度的数据。
+     * <p>
+     * 操作完毕后输入流将被关闭；遇到异常时默认返回内容为空的数组；默认使用"8KB"缓冲区。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
+     *
+     * @param stream 输入流。
+     * @param offset 起始位置（从0开始计数）。
+     * @param length 读取字节数。
+     * @return 字节数组。遇到错误时将返回内容为空的数组。
+     */
+    public static byte[] readAsBytes(InputStream stream, long offset, int length) {
+        return readAsBytes(stream, offset, length, BUFFER_SIZE_DEFAULT);
+    }
+
+    /**
+     * 从输入流读取二进制数据。
+     * <p>
+     * 该方法将读取第二参数"length"指定长度的数据。
+     * <p>
+     * 操作完毕后输入流将被关闭；遇到异常时默认返回内容为空的数组；默认使用"8KB"缓冲区。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
+     *
+     * @param stream 输入流。
+     * @param length 读取字节数。
+     * @return 字节数组。遇到错误时将返回内容为空的数组。
+     */
+    public static byte[] readAsBytes(InputStream stream, int length) {
+        return readAsBytes(stream, 0L, length, BUFFER_SIZE_DEFAULT);
+    }
+
+    /**
+     * 从输入流读取所有二进制数据。
+     * <p>
+     * 操作完毕后输入流将被关闭；遇到异常时默认返回内容为空的数组；默认使用"8KB"缓冲区。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
+     *
+     * @param stream 输入流。
+     * @return 字节数组。遇到错误时将返回内容为空的数组。
+     */
+    public static byte[] readAllAsBytes(InputStream stream) {
+        return readAsBytes(stream, 0L, Integer.MAX_VALUE, BUFFER_SIZE_DEFAULT);
+    }
+
+
+    /**
+     * 将Byte数组List中的元素合并为一个Byte数组。
+     *
+     * @param input 待合并的List。
+     * @return 合并后的Byte数组。
+     */
+    private static byte[] mergeByteArrayList(List<byte[]> input) {
+        // 校验输入参数
+        if (input == null || input.isEmpty()) {
+            return new byte[0];
+        }
+
+        // 计算元素总数并过滤空值
+        int validCount = 0;
+        List<byte[]> listNonNull = new ArrayList<>();
+        for (byte[] item : input) {
+            if (item != null) {
+                validCount += item.length;
+                listNonNull.add(item);
+            }
+        }
+
+        // 合并结果
+        byte[] result = new byte[validCount];
+        int position = 0;
+        for (byte[] item : listNonNull) {
+            System.arraycopy(item, 0, result, position, item.length);
+            // 这里是当前数组的长度，比Index多一位，因此下一轮会从有效数据后一位开始填充，无需手动+1。
+            position += item.length;
+        }
+
+        return result;
     }
 }

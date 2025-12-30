@@ -1,5 +1,6 @@
 package net.bi4vmr.tool;
 
+import net.bi4vmr.tool.java.common.base.NumberUtil;
 import net.bi4vmr.tool.java.io.base.FileIOUtil;
 import org.junit.jupiter.api.Test;
 
@@ -25,9 +26,12 @@ public class TestFileIOUtil {
         // }
 
         // File file = new File("/home/bi4vmr/Download/1.tar");
-        File file = new File("/home/bi4vmr/Download/1.txt");
+        // File file = new File("/home/bi4vmr/Download/1.txt");
+        File file = new File("C:/Users/bi4vmr/Downloads/FileZilla_3.69.5_win64-setup.exe");
+        byte[] b= FileIOUtil.readAsBytes(file,2,8);
+        System.out.println("Hex:[" + NumberUtil.toHexString(b) + "]");
         // readAsBytes(new File("D:\\Download\\压缩归档\\test.txt"),0,12,8192);
-        String datas = FileIOUtil.readAsHexText(file, 6, 0);
-        System.out.println("Hex:[" + datas + "]");
+        // String datas = FileIOUtil.readAsHexText(file, 6, 0);
+        // System.out.println("Hex:[" + datas + "]");
     }
 }

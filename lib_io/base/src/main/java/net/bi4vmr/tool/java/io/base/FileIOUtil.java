@@ -3,6 +3,7 @@ package net.bi4vmr.tool.java.io.base;
 import net.bi4vmr.tool.java.common.base.NumberUtil;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 /**
@@ -13,44 +14,17 @@ import java.util.Arrays;
  */
 public class FileIOUtil extends IOUtil {
 
-    /**
-     * 读取二进制数据。
-     * <p>
-     * 该方法将从文件起始位置开始，读取最多{@link Integer#MAX_VALUE}字节的数据，文件体积较大时需要注意内存占用问题。
-     * <p>
-     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也容易导
-     * 致内存溢出。对于此类需求，调用者可以分块读取文件并进行处理。
-     *
-     * @param file 目标文件。
-     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
+    /*
+     * ----- 从文件读取二进制数据 -----
      */
-    public static byte[] readAsBytes(File file) {
-        return readAsBytes(file, 0, Integer.MAX_VALUE);
-    }
 
     /**
-     * 读取二进制数据。
-     * <p>
-     * 该方法将从文件起始位置开始，读取第二参数"length"指定长度的数据。
-     * <p>
-     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也容易导
-     * 致内存溢出。对于此类需求，调用者可以分块读取文件并进行处理。
-     *
-     * @param file   目标文件。
-     * @param length 读取字节数。
-     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
-     */
-    public static byte[] readAsBytes(File file, int length) {
-        return readAsBytes(file, 0, length);
-    }
-
-    /**
-     * 读取二进制数据。
+     * 从文件读取二进制数据。
      * <p>
      * 该方法将从第二参数"offset"指定位置开始，读取第三参数"length"指定长度的数据。
      * <p>
-     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也容易导
-     * 致内存溢出。对于此类需求，调用者可以分块读取文件并进行处理。
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
      *
      * @param file   目标文件。
      * @param offset 起始位置（从0开始计数）。
@@ -58,16 +32,16 @@ public class FileIOUtil extends IOUtil {
      * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
      */
     public static byte[] readAsBytes(File file, long offset, int length) {
-        byte[] empty = new byte[]{};
-
         // 校验文件是否可读
         if (file == null || !file.exists() || file.isDirectory() || !file.canRead()) {
-            return empty;
+            System.err.println("FileIOUtil - File not exist or no permission to read!");
+            return new byte[0];
         }
 
-        // 校验输入参数的合法性
+        // 校验输入参数
         if (offset < 0 || offset >= file.length() || length < 0) {
-            return empty;
+            System.err.println("FileIOUtil - Offset or length value invalid!");
+            return new byte[0];
         }
 
         // 如果参数指定的长度大于实际数据长度，则改写为实际数据长度。
@@ -81,7 +55,9 @@ public class FileIOUtil extends IOUtil {
         try (
                 RandomAccessFile accessor = new RandomAccessFile(file, "r");
         ) {
+            // 忽略指定长度的数据
             accessor.seek(offset);
+
             int count = accessor.read(buffer);
             // 如果实际读取的数据长度小于目标长度，则截取有效元素。
             if (count < length) {
@@ -90,20 +66,196 @@ public class FileIOUtil extends IOUtil {
 
             return buffer;
         } catch (IOException e) {
-            System.err.println("Read file as bytes failed! Reason:[" + e.getMessage() + "]");
-            e.printStackTrace();
+            System.err.println("FileIOUtil - Read file as bytes failed! Reason:[" + e.getMessage() + "]");
         }
 
-        return empty;
+        return new byte[0];
     }
 
     /**
-     * 读取十六进制文本。
+     * 从文件读取二进制数据。
+     * <p>
+     * 该方法将从文件起始位置开始，读取第二参数"length"指定长度的数据。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
+     *
+     * @param file   目标文件。
+     * @param length 读取字节数。
+     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
+     */
+    public static byte[] readAsBytes(File file, int length) {
+        return readAsBytes(file, 0L, length);
+    }
+
+    /**
+     * 从文件读取二进制数据。
+     * <p>
+     * 该方法将从文件起始位置开始，读取最多 {@link Integer#MAX_VALUE} 字节的数据，文件体积较大时需要注意内存占用问题。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
+     *
+     * @param file 目标文件。
+     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
+     */
+    public static byte[] readAllAsBytes(File file) {
+        return readAsBytes(file, 0L, Integer.MAX_VALUE);
+    }
+
+
+    /*
+     * ----- 从文件描述符读取二进制数据 -----
+     */
+
+    /**
+     * 从文件描述符读取二进制数据。
+     * <p>
+     * 该方法将从第二参数"offset"指定位置开始，读取第三参数"length"指定长度的数据。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
+     *
+     * @param fd         文件描述符。
+     * @param offset     起始位置（从0开始计数）。
+     * @param length     读取字节数。
+     * @param bufferSize 缓冲区大小（字节）。
+     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
+     */
+    public static byte[] readAsBytes(FileDescriptor fd, long offset, int length, int bufferSize) {
+        // 校验文件描述符是否可用
+        if (fd == null || !fd.valid()) {
+            System.err.println("FileIOUtil - FileDescriptor is null or invalid!");
+            return new byte[0];
+        }
+
+        // 校验输入参数
+        if (offset < 0 || length < 0 || bufferSize <= 0) {
+            System.err.println("FileIOUtil - Offset or length value invalid!");
+            return new byte[0];
+        }
+
+        ByteArrayOutputStream result = null;
+        try (
+                FileInputStream fis = new FileInputStream(fd);
+                BufferedInputStream bis = new BufferedInputStream(fis, bufferSize)
+        ) {
+            // 忽略指定长度的数据
+            if (offset > 0L) {
+                long skipped = 0;
+                while (skipped < offset) {
+                    long count = bis.skip(offset - skipped);
+                    if (count <= 0) {
+                        // 跳过操作失败，检测是否已到达末尾。
+                        if (bis.read() == -1) {
+                            return new byte[0];
+                        }
+
+                        skipped++;
+                    } else {
+                        // 跳过操作成功，累计偏移量。
+                        skipped += count;
+                    }
+                }
+            }
+
+            result = new ByteArrayOutputStream();
+            byte[] buffer = new byte[bufferSize];
+            int remaining = length;
+            while (remaining > 0) {
+                // 当前轮次读取的数量为缓冲区容量和剩余数量中较小的一个
+                int readCount = Math.min(bufferSize, remaining);
+                int count = bis.read(buffer, 0, readCount);
+                // 如果读取方法返回负数，表示已到文件末尾。
+                if (count == -1) {
+                    break;
+                }
+
+                if (count > 0) {
+                    // 将读取到的数据添加到结果列表中
+                    result.write(buffer, 0, count);
+                    // 更新剩余的数据量
+                    remaining -= count;
+                }
+            }
+
+            // 将每轮读取到的数据合并为单个数组
+            return result.toByteArray();
+        } catch (IOException e) {
+            System.err.println("FileIOUtil - Read FD as bytes failed! Reason:[" + e.getMessage() + "]");
+        } finally {
+            closeSilently(result);
+        }
+
+        return new byte[0];
+    }
+
+    /**
+     * 从文件描述符读取二进制数据。
+     * <p>
+     * 该方法将从第二参数"offset"指定位置开始，读取第三参数"length"指定长度的数据。
+     * <p>
+     * 遇到异常时默认返回内容为空的数组；默认使用"8KB"缓冲区。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
+     *
+     * @param fd     文件描述符。
+     * @param offset 起始位置（从0开始计数）。
+     * @param length 读取字节数。
+     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
+     */
+    public static byte[] readAsBytes(FileDescriptor fd, long offset, int length) {
+        return readAsBytes(fd, offset, length, BUFFER_SIZE_DEFAULT);
+    }
+
+    /**
+     * 从文件描述符读取二进制数据。
+     * <p>
+     * 该方法将从文件起始位置开始，读取第二参数"length"指定长度的数据。
+     * <p>
+     * 遇到异常时默认返回内容为空的数组；默认使用"8KB"缓冲区。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
+     *
+     * @param fd     文件描述符。
+     * @param length 读取字节数。
+     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
+     */
+    public static byte[] readAsBytes(FileDescriptor fd, int length) {
+        return readAsBytes(fd, 0L, length, BUFFER_SIZE_DEFAULT);
+    }
+
+    /**
+     * 从文件描述符读取二进制数据。
+     * <p>
+     * 该方法将从文件起始位置开始，读取最多 {@link Integer#MAX_VALUE} 字节的数据，文件体积较大时需要注意内存占用问题。
+     * <p>
+     * 遇到异常时默认返回内容为空的数组；默认使用"8KB"缓冲区。
+     * <p>
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
+     *
+     * @param fd 文件描述符。
+     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
+     */
+    public static byte[] readAllAsBytes(FileDescriptor fd) {
+        return readAsBytes(fd, 0L, Integer.MAX_VALUE, BUFFER_SIZE_DEFAULT);
+    }
+
+
+    /*
+     * ----- 从文件读取二进制数据，并进行处理。 -----
+     */
+
+    /**
+     * 从文件读取十六进制文本。
      * <p>
      * 该方法将从文件起始位置开始，读取最多{@link Integer#MAX_VALUE}字节的数据，文件体积较大时需要注意内存占用问题。
      * <p>
-     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也容易导
-     * 致内存溢出。对于此类需求，调用者可以分块读取文件并进行处理。
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
      *
      * @param file 目标文件。
      * @return 二进制数据。永不为空值，读取失败时将返回内容为空的字符串。
@@ -113,12 +265,12 @@ public class FileIOUtil extends IOUtil {
     }
 
     /**
-     * 读取十六进制文本。
+     * 从文件读取十六进制文本。
      * <p>
      * 该方法将从文件起始位置开始，读取第二参数"length"指定长度的数据，并转换为十六进制文本。
      * <p>
-     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也容易导
-     * 致内存溢出。对于此类需求，调用者可以分块读取文件并进行处理。
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
      *
      * @param file   目标文件。
      * @param length 读取字节数。
@@ -129,12 +281,12 @@ public class FileIOUtil extends IOUtil {
     }
 
     /**
-     * 读取十六进制文本。
+     * 从文件读取十六进制文本。
      * <p>
      * 该方法将从第二参数"offset"指定位置开始，读取第三参数"length"指定长度的数据，并转换为十六进制文本。
      * <p>
-     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也容易导
-     * 致内存溢出。对于此类需求，调用者可以分块读取文件并进行处理。
+     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也可能导
+     * 致内存溢出。对于大文件读取场景，调用者可以分块读取文件并进行处理。
      *
      * @param file   目标文件。
      * @param offset 起始位置（从0开始计数）。
@@ -146,125 +298,30 @@ public class FileIOUtil extends IOUtil {
         return NumberUtil.toHexString(datas);
     }
 
-    /**
-     * 读取二进制数据。
-     * <p>
-     * 该方法将从文件起始位置开始，读取最多{@link Integer#MAX_VALUE}字节的数据，文件体积较大时需要注意内存占用问题。
-     * <p>
-     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也容易导
-     * 致内存溢出。对于此类需求，调用者可以分块读取文件并进行处理。
-     *
-     * @param fd 目标文件。
-     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
+
+    /*
+     * ----- 将输入流的数据转存至文件 -----
      */
-    public static byte[] readAsBytes(FileDescriptor fd) {
-        return readAsBytes(fd, 0, Integer.MAX_VALUE);
-    }
 
     /**
-     * 读取二进制数据。
+     * 将输入流中的数据转存至文件。
      * <p>
-     * 该方法将从文件起始位置开始，读取第二参数"length"指定长度的数据。
-     * <p>
-     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也容易导
-     * 致内存溢出。对于此类需求，调用者可以分块读取文件并进行处理。
+     * 操作完毕后输入流会被关闭。
      *
-     * @param fd     目标文件。
-     * @param length 读取字节数。
-     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
-     */
-    public static byte[] readAsBytes(FileDescriptor fd, int length) {
-        return readAsBytes(fd, 0, length);
-    }
-
-    /**
-     * 读取二进制数据。
-     * <p>
-     * 该方法将从第二参数"offset"指定位置开始，读取第三参数"length"指定长度的数据。
-     * <p>
-     * 该方法仅适用于简单数据的处理，无法处理长度超过2GiB的部分。这是因为数组容量受到"int"类型最大值的限制，并且单次读取过多数据也容易导
-     * 致内存溢出。对于此类需求，调用者可以分块读取文件并进行处理。
-     *
-     * @param fd     文件描述符。
-     * @param offset 起始位置（从0开始计数）。
-     * @param length 读取字节数。
-     * @return 二进制数据。永不为空值，读取失败时将返回内容为空的数组。
-     */
-    public static byte[] readAsBytes(FileDescriptor fd, long offset, int length) {
-        byte[] empty = new byte[]{};
-
-        // 校验文件描述符是否可用
-        if (!fd.valid()) {
-            return empty;
-        }
-
-        // 校验输入参数的合法性
-        if (offset < 0 || length < 0) {
-            return empty;
-        }
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[8 * 1024 * 1024];
-        try (
-                FileInputStream fis = new FileInputStream(fd);
-                BufferedInputStream bis = new BufferedInputStream(fis, buffer.length)
-        ) {
-            long total = bis.available();
-            long valid = total - offset;
-            // 如果偏移量大于文件总长度，说明已经没有数据可供读取了，直接返回空数组。
-            if (valid <= 0) {
-                return empty;
-            }
-            bis.skip(offset);
-
-            while (true) {
-                int count = bis.read(buffer);
-                if (count == -1) {
-                    break;
-                }
-
-                baos.write(buffer, 0, count);
-            }
-
-            return baos.toByteArray();
-        } catch (IOException e) {
-            System.err.println("Read file as bytes failed! Reason:[" + e.getMessage() + "]");
-            e.printStackTrace();
-        }
-
-        return empty;
-    }
-
-    /**
-     * 将文件描述符所指代的数据复制到文件。
-     * <p>
-     * 操作完毕后文件描述符会被关闭；缓冲区容量默认为8KB。
-     *
-     * @param fd   文件描述符。
-     * @param dest 目标文件。
-     */
-    public static void copyToFile(FileDescriptor fd, File dest) {
-        copyToFile(fd, dest, DEFAULT_BUFFER_SIZE);
-    }
-
-    /**
-     * 将文件描述符所指代的数据复制到文件。
-     * <p>
-     * 操作完毕后文件描述符会被关闭。
-     *
-     * @param fd         文件描述符。
-     * @param dest       目标文件。
+     * @param stream     输入流。
+     * @param file       目标文件。
      * @param bufferSize 缓冲区大小（字节）。
      */
-    public static void copyToFile(FileDescriptor fd, File dest, int bufferSize) {
-        // 校验输入参数的合法性
+    public static void saveToFile(InputStream stream, File file, int bufferSize) {
+        // 校验输入参数
         if (bufferSize <= 0) {
+            System.err.println("FileIOUtil - Buffer size must > 0!");
             return;
         }
 
         try (
-                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fd), bufferSize);
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dest), bufferSize)
+                BufferedInputStream bis = new BufferedInputStream(stream, bufferSize);
+                BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(file.toPath()), bufferSize)
         ) {
             byte[] buffer = new byte[bufferSize];
             while (true) {
@@ -275,8 +332,95 @@ public class FileIOUtil extends IOUtil {
                 bos.write(buffer, 0, count);
             }
         } catch (IOException e) {
-            System.err.println("Copy data failed! Reason:[" + e.getMessage() + "]");
-            e.printStackTrace();
+            System.err.println("FileIOUtil - Copy data from InputStream failed! Reason:[" + e.getMessage() + "]");
         }
+    }
+
+    /**
+     * 将输入流中的数据转存至文件。
+     * <p>
+     * 操作完毕后输入流会被关闭；缓冲区容量默认为8KB。
+     *
+     * @param stream 输入流。
+     * @param dest   目标文件。
+     */
+    public static void saveToFile(InputStream stream, File dest) {
+        saveToFile(stream, dest, BUFFER_SIZE_DEFAULT);
+    }
+
+    /*
+     * ----- 将数组流的数据转存至文件 -----
+     */
+
+    /**
+     * 将 {@link ByteArrayOutputStream} 中的数据转存至文件。
+     *
+     * @param stream     {@link ByteArrayOutputStream}实例。
+     * @param file       目标文件。
+     * @param bufferSize 缓冲区大小（字节）。
+     */
+    public static void saveToFile(ByteArrayOutputStream stream, File file, int bufferSize) {
+        ByteArrayInputStream input = new ByteArrayInputStream(stream.toByteArray());
+        saveToFile(input, file, bufferSize);
+    }
+
+    /**
+     * 将 {@link ByteArrayOutputStream} 中的数据转存至文件。
+     * <p>
+     * 默认使用"8KB"缓冲区。
+     *
+     * @param stream {@link ByteArrayOutputStream}实例。
+     * @param file   目标文件。
+     */
+    public static void saveToFile(ByteArrayOutputStream stream, File file) {
+        saveToFile(stream, file, BUFFER_SIZE_DEFAULT);
+    }
+
+
+    /*
+     * ----- 将文件描述符指向的内容转存至文件 -----
+     */
+
+    /**
+     * 将文件描述符指向的内容转存至文件。
+     *
+     * @param fd         文件描述符。
+     * @param file       目标文件。
+     * @param bufferSize 缓冲区大小（字节）。
+     */
+    public static void saveToFile(FileDescriptor fd, File file, int bufferSize) {
+        // 校验输入参数的合法性
+        if (bufferSize <= 0) {
+            System.err.println("FileIOUtil - Buffer size must > 0!");
+            return;
+        }
+
+        try (
+                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fd), bufferSize);
+                BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(file.toPath()), bufferSize)
+        ) {
+            byte[] buffer = new byte[bufferSize];
+            while (true) {
+                int count = bis.read(buffer);
+                if (count == -1) {
+                    break;
+                }
+                bos.write(buffer, 0, count);
+            }
+        } catch (Exception e) {
+            System.err.println("FileIOUtil - Copy data from FD failed! Reason:[" + e.getMessage() + "]");
+        }
+    }
+
+    /**
+     * 将文件描述符指向的内容转存至文件。
+     * <p>
+     * 默认使用"8KB"缓冲区。
+     *
+     * @param fd   文件描述符。
+     * @param file 目标文件。
+     */
+    public static void saveToFile(FileDescriptor fd, File file) {
+        saveToFile(fd, file, BUFFER_SIZE_DEFAULT);
     }
 }
