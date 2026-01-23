@@ -1,5 +1,7 @@
 package net.bi4vmr.tool.java.finance.base;
 
+import java.util.Objects;
+
 /**
  * 贷款每月还款计划。
  *
@@ -77,5 +79,33 @@ public class LoanMonthlyInfo {
      */
     public String getTotal() {
         return total;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (hashCode() != o.hashCode()) return false;
+
+        LoanMonthlyInfo that = (LoanMonthlyInfo) o;
+        return month == that.month &&
+                Objects.equals(principal, that.principal) &&
+                Objects.equals(interest, that.interest) &&
+                Objects.equals(total, that.total);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(month, principal, interest, total);
+    }
+
+    @Override
+    public String toString() {
+        return "LoanMonthlyInfo{" +
+                "month=" + month +
+                ", principal='" + principal + '\'' +
+                ", interest='" + interest + '\'' +
+                ", total='" + total + '\'' +
+                '}';
     }
 }
