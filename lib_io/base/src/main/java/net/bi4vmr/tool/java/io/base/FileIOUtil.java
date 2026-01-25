@@ -1,7 +1,5 @@
 package net.bi4vmr.tool.java.io.base;
 
-import net.bi4vmr.tool.java.common.base.NumberUtil;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -295,7 +293,7 @@ public class FileIOUtil extends IOUtil {
      */
     public static String readAsHexText(File file, int offset, int length) {
         byte[] datas = readAsBytes(file, offset, length);
-        return NumberUtil.toHexString(datas);
+        return toHexString(datas, true, true);
     }
 
 
@@ -348,6 +346,7 @@ public class FileIOUtil extends IOUtil {
         saveToFile(stream, dest, BUFFER_SIZE_DEFAULT);
     }
 
+
     /*
      * ----- 将数组流的数据转存至文件 -----
      */
@@ -374,6 +373,35 @@ public class FileIOUtil extends IOUtil {
      */
     public static void saveToFile(ByteArrayOutputStream stream, File file) {
         saveToFile(stream, file, BUFFER_SIZE_DEFAULT);
+    }
+
+
+    /*
+     * ----- 将字节数组转存至文件 -----
+     */
+
+    /**
+     * 将字节数组中的数据转存至文件。
+     *
+     * @param data       字节数组。
+     * @param file       目标文件。
+     * @param bufferSize 缓冲区大小（字节）。
+     */
+    public static void saveToFile(byte[] data, File file, int bufferSize) {
+        ByteArrayInputStream input = new ByteArrayInputStream(data);
+        saveToFile(input, file, bufferSize);
+    }
+
+    /**
+     * 将字节数组中的数据转存至文件。
+     * <p>
+     * 默认使用"8KB"缓冲区。
+     *
+     * @param data 字节数组。
+     * @param file 目标文件。
+     */
+    public static void saveToFile(byte[] data, File file) {
+        saveToFile(data, file, BUFFER_SIZE_DEFAULT);
     }
 
 
@@ -422,5 +450,58 @@ public class FileIOUtil extends IOUtil {
      */
     public static void saveToFile(FileDescriptor fd, File file) {
         saveToFile(fd, file, BUFFER_SIZE_DEFAULT);
+    }
+
+
+    /**
+     * 将数字转为十六进制文本。
+     * <p>
+     * 与 [lib-common:base#NumberUtil] 模块中的同名方法相同。
+     *
+     * @param data        待转换的数字。
+     * @param needPadding 结果为单个字符时，是否在前面补"0"。
+     * @param isUpperCase 是否将结果转换为大写字母。
+     * @return 十六进制文本。永不为空，转换失败时将返回内容为空的字符串。
+     */
+    private static String toHexString(byte data, boolean needPadding, boolean isUpperCase) {
+        /*
+         * 单个字节的取值范围是：[0, 255]，当它被读取为"byte"类型时，大于127的值将被映射到负数，因此我们需要将"byte"值和"0xFF"做与运
+         * 算，丢弃符号位以获取原始数值。
+         */
+        String hex = Integer.toHexString(data & 0xFF);
+        // 如果该字节对应的16进制文本只有一个字符，则在前面补"0"。
+        if (needPadding && hex.length() < 2) {
+            hex = "0" + hex;
+        }
+
+        if (isUpperCase) {
+            return hex.toUpperCase();
+        } else {
+            return hex;
+        }
+    }
+
+    /**
+     * 将数组转为十六进制文本。
+     * <p>
+     * 与 [lib-common:base#NumberUtil] 模块中的同名方法相同。
+     *
+     * @param datas       待转换的数组。
+     * @param needPadding 元素为单个字符时，是否在前面补"0"。
+     * @param isUpperCase 是否将结果转换为大写字母。
+     * @return 十六进制文本。永不为空，转换失败时将返回内容为空的字符串。
+     */
+    public static String toHexString(byte[] datas, boolean needPadding, boolean isUpperCase) {
+        if (datas == null || datas.length == 0) {
+            return "";
+        }
+
+        StringBuilder buffer = new StringBuilder();
+        for (byte b : datas) {
+            String hex = toHexString(b, needPadding, isUpperCase);
+            buffer.append(hex);
+        }
+
+        return buffer.toString();
     }
 }
