@@ -17,7 +17,7 @@ public class NumberUtil {
      * 默认不支持正负号，若需要支持这种格式，请使用 {@link NumberUtil#isInteger(String, boolean)} 方法。
      *
      * @param text 待测试的文本。
-     * @return "true"表示文本内容是整数，"false"表示文本内容不是整数。
+     * @return `true` 表示文本内容是整数， `false` 表示文本内容不是整数。
      */
     public static boolean isInteger(String text) {
         return isInteger(text, false);
@@ -27,9 +27,9 @@ public class NumberUtil {
      * 判断文本内容是否为整数。
      *
      * @param text        待测试的文本。
-     * @param supportSign 是否支持符号，设为"true"时可以识别带有正负号的数字；设为"false"时，传入带有正负号的文
-     *                    本则被认为不是数字。
-     * @return "true"表示文本内容是整数，"false"表示文本内容不是整数。
+     * @param supportSign 是否支持符号，设为 `true` 时可以识别带有正负号的数字；设为 `false` 时，传入带有正负号的文本则被认为不是
+     *                    数字。
+     * @return `true` 表示文本内容是整数， `false` 表示文本内容不是整数。
      */
     public static boolean isInteger(String text, boolean supportSign) {
         if (TextUtil.isEmpty(text)) {
@@ -51,6 +51,50 @@ public class NumberUtil {
     }
 
     /**
+     * 将文本转为整型数值。
+     *
+     * @param text 输入文本。
+     * @return 整型数值。
+     * @throws NumberFormatException 文本无法被转为数字时将抛出该异常。
+     */
+    public static int toIntegerUnsafe(String text) {
+        return Integer.parseInt(text);
+    }
+
+    /**
+     * 将文本转为整型数值。
+     * <p>
+     * 文本无法被转为数字时，默认返回 `0` 。
+     *
+     * @param text 输入文本。
+     * @return 整型数值。
+     */
+    public static int toInteger(String text) {
+        try {
+            return toIntegerUnsafe(text);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    /**
+     * 将文本转为整型数值。
+     * <p>
+     * 文本无法被转为数字时，返回第二参数指定的默认值。
+     *
+     * @param text     输入文本。
+     * @param defValue 默认值。
+     * @return 整型数值。
+     */
+    public static int toInteger(String text, int defValue) {
+        try {
+            return toIntegerUnsafe(text);
+        } catch (Exception e) {
+            return defValue;
+        }
+    }
+
+    /**
      * 判断文本内容是否为小数。
      * <p>
      * 整数也属于小数的一种。
@@ -58,7 +102,7 @@ public class NumberUtil {
      * 默认不支持正负号，若需要支持这种格式，请使用 {@link NumberUtil#isDecimal(String, boolean)} 方法。
      *
      * @param text 待测试的文本。
-     * @return "true"表示文本内容是小数，"false"表示文本内容不是小数。
+     * @return `true` 表示文本内容是小数， `false` 表示文本内容不是小数。
      */
     public static boolean isDecimal(String text) {
         return isDecimal(text, false);
@@ -70,9 +114,9 @@ public class NumberUtil {
      * 整数也属于小数的一种。
      *
      * @param text        待测试的文本。
-     * @param supportSign 是否支持符号，设为"true"时可以识别带有正负号的数字；设为"false"时，传入带有正负号的文
-     *                    本则被认为不是数字。
-     * @return "true"表示文本内容是小数，"false"表示文本内容不是小数。
+     * @param supportSign 是否支持符号，设为 `true` 时可以识别带有正负号的数字；设为 `false` 时，传入带有正负号的文本则被认为不是
+     *                    数字。
+     * @return `true` 表示文本内容是小数， `false` 表示文本内容不是小数。
      */
     public static boolean isDecimal(String text, boolean supportSign) {
         if (TextUtil.isEmpty(text)) {
@@ -92,6 +136,52 @@ public class NumberUtil {
             return false;
         }
     }
+
+    /**
+     * 将文本转为小数数值。
+     *
+     * @param text 输入文本。
+     * @return 小数数值。
+     * @throws NullPointerException  输入参数为空值时将抛出该异常。
+     * @throws NumberFormatException 文本无法被转为数字时将抛出该异常。
+     */
+    public static double toDecimalUnsafe(String text) {
+        return Double.parseDouble(text);
+    }
+
+    /**
+     * 将文本转为小数数值。
+     * <p>
+     * 文本无法被转为数字时，默认返回 `0` 。
+     *
+     * @param text 输入文本。
+     * @return 小数数值。
+     */
+    public static double toDecimal(String text) {
+        try {
+            return toDecimalUnsafe(text);
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
+
+    /**
+     * 将文本转为小数数值。
+     * <p>
+     * 文本无法被转为数字时，返回第二参数指定的默认值。
+     *
+     * @param text     输入文本。
+     * @param defValue 默认值。
+     * @return 小数数值。
+     */
+    public static double toDecimal(String text, double defValue) {
+        try {
+            return toDecimalUnsafe(text);
+        } catch (Exception e) {
+            return defValue;
+        }
+    }
+
 
     /*
      * ----- 进制转换 -----
@@ -169,6 +259,7 @@ public class NumberUtil {
         return buffer.toString();
     }
 
+
     /*
      * ----- 数字序号处理 -----
      */
@@ -176,11 +267,11 @@ public class NumberUtil {
     /**
      * 数字转为序号。
      * <p>
-     * 在数字前添加"0"，生成序号。
+     * 在数字前添加 `0` ，生成序号。
      *
      * @param num    原始数值，必须大于0。
      * @param length 序号的位数。
-     * @return 序号，参数不合法时将返回Null。
+     * @return 序号。参数不合法时将返回空值。
      */
     public static String toSerialNumber(int num, int length) {
         if (num <= 0 || length <= 0) {
