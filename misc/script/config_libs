@@ -1,7 +1,7 @@
 # 在此处注册各Lib模块的名称，按照依赖顺序排列。
 :lib_common:base
 :lib_io:base
-:lib_storage:file
+# :lib_storage:file
 :lib_serial:basecode
 :lib_serial:gson
 :lib_math:base
