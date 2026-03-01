@@ -27,7 +27,7 @@ dependencies {
 }
 
 javaVersionConfig {
-    jdkVersion = JavaVersion.VERSION_11
+    jdkVersion = JavaVersion.VERSION_1_8
 }
 
 privatePublishConfig {
