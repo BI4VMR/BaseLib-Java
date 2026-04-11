@@ -44,6 +44,7 @@ includeBuild("plugin")
 // ----- 工具库 -----
 // 公共组件
 include(":lib_common:base")
+include(":lib_common:reflect")
 
 // 序列化
 include(":lib_serial:basecode")
