@@ -21,6 +21,21 @@ import java.util.List;
 public class FileUtil {
 
     /**
+     * 文件路径：无效值。
+     * <p>
+     * 用于表示未初始化的文件路径，可在不希望出现空值的场景使用。
+     */
+    public static final String PATH_INVALID = "/INVALID_PATH";
+
+    /**
+     * 文件：无效值。
+     * <p>
+     * 用于表示未初始化的文件路径，可在不希望出现空值的场景使用。
+     */
+    public static final File FILE_INVALID = new File(PATH_INVALID);
+
+
+    /**
      * 获取最后修改时间戳。
      *
      * @param file 目标文件。
