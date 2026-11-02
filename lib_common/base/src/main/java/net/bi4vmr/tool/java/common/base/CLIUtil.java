@@ -2,6 +2,7 @@ package net.bi4vmr.tool.java.common.base;
 
 import net.bi4vmr.tool.java.common.base.io.BaseIOUtil;
 import net.bi4vmr.tool.java.common.base.io.IOUtil;
+import net.bi4vmr.tool.java.common.base.system.SystemUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class CLIUtil {
 
+    /**
+     * 日志工具。
+     */
     private static final Logger logger = LoggerFactory.getLogger(CLIUtil.class);
 
 
@@ -340,6 +344,18 @@ public class CLIUtil {
         }
 
         return result.toArray(new String[0]);
+    }
+
+    /**
+     * 判断当前环境是否存在可执行程序。
+     *
+     * @param name 程序名称。
+     * @return `true` 表示程序存在； `false` 表示程序不存在。
+     */
+    public static boolean hasExecutable(String name) {
+        String detectProgram = SystemUtil.isWindows() ? "where" : "which";
+        int status = CLIUtil.runForStatus(detectProgram + " " + name);
+        return CLIUtil.isSuccess(status);
     }
 
     /**

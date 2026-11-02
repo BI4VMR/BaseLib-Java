@@ -11,17 +11,17 @@ import net.bi4vmr.tool.java.common.base.TextUtil;
 public enum OSType {
 
     /**
-     * Microsoft Windows.
+     * Microsoft Windows .
      */
     WINDOWS("windows"),
 
     /**
-     * GNU/Linux.
+     * GNU/Linux .
      */
     LINUX("linux"),
 
     /**
-     * Apple MacOS.
+     * Apple MacOS .
      */
     MACOS("macos", "mac os"),
 

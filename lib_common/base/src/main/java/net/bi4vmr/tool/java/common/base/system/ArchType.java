@@ -11,17 +11,17 @@ import net.bi4vmr.tool.java.common.base.TextUtil;
 public enum ArchType {
 
     /**
-     * {@code x86}.
+     * {@code x86} .
      */
     X86("x86", "i386", "i486", "i586", "i686"),
 
     /**
-     * {@code x86_64}.
+     * {@code x86_64} .
      */
     X86_64("x86_64", "amd64", "x64"),
 
     /**
-     * {@code arm64}.
+     * {@code arm64} .
      */
     ARM64("arm64", "aarch64"),
 
