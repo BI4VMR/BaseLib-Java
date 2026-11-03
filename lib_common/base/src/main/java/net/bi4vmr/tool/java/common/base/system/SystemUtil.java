@@ -178,6 +178,21 @@ public class SystemUtil {
     }
 
     /**
+     * 获取环境变量 {@code SHELL} 的值。
+     *
+     * @return 变量值。非空，罕见的情况下将返回空字符串。
+     */
+    public static String getShell() {
+        String rawValue = System.getenv(Environments.SHELL);
+        if (rawValue == null) {
+            logger.error("Environment variable [SHELL] is not exist!");
+            return "";
+        }
+
+        return rawValue;
+    }
+
+    /**
      * 获取环境变量 {@code PATH} 的目录数组。
      * <p>
      * 根据平台解析变量值，每个数组元素表示一个目录。

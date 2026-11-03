@@ -3,6 +3,7 @@ package net.bi4vmr.tool.java.common.base;
 import net.bi4vmr.tool.java.common.base.io.BaseIOUtil;
 import net.bi4vmr.tool.java.common.base.io.IOUtil;
 import net.bi4vmr.tool.java.common.base.system.SystemUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -294,6 +295,9 @@ public class CLIUtil {
      * 将完整的命令语句拆分为数组。
      * <p>
      * {@link ProcessBuilder} 只能接受已按空格拆分的命令数组，如果用户输入的是整行命令，需要先通过本方法进行拆分。
+     * <p>
+     * 本方法能够识别引号并将其移除，只保留其中的内容作为一个完整参数。例如： {@code echo "say \"hi\""} 将被解析为
+     * {@code ["echo", "say", ""hi""]} 。
      *
      * @param command 命令语句。
      * @return 拆分后的命令数组。
@@ -305,42 +309,67 @@ public class CLIUtil {
         }
 
         List<String> result = new ArrayList<>();
-        StringBuilder word = new StringBuilder();
-        boolean inQuotes = false;
+        StringBuilder stash = new StringBuilder();
+        // 当前所处的引号类型，特殊值 `0` 表示不在引号内部。
+        char quote = 0;
+        // 当前引号之间的内容是否为空。
+        boolean emptyQuote = false;
+
         // 遍历字符，拆分命令语句。
         for (int i = 0; i < command.length(); i++) {
             char c = command.charAt(i);
 
-            // 如果当前字符是引号，将标志位取反，并跳过后续的拆分操作。
-            if (c == '"') {
-                inQuotes = !inQuotes;
+            // 去掉双引号后，双引号内的转义符号不再有意义，需要移除它们。
+            int nextIndex = i + 1;
+            if ((c == '\\') && (quote != '\'') && nextIndex < command.length()) {
+                char next = command.charAt(nextIndex);
+                stash.append(next);
+                // 后一位字符已被录入，此处进度额外推进一位。
+                i++;
                 continue;
             }
 
-            // 如果当前字符是空格且不在引号内，则将暂存区的所有字符视作单词并放入结果列表。
-            if (Character.isWhitespace(c) && !inQuotes) {
-                // 若单词之间存在多个空格，此处需要跳过，防止产生多个内容为空的数组元素。
-                if (word.length() == 0) {
+            // 如果当前字符是引号，则进入或退出引号累计模式，并跳过后续操作，将引号之间的内容视为一个整体。
+            boolean noQuote = (quote == 0);
+            if ((c == '"' || c == '\'') && (noQuote || quote == c)) {
+                // 记录 "" 或 '' 这类空参数。
+                if (!noQuote && stash.length() == 0) {
+                    emptyQuote = true;
+                }
+
+                quote = noQuote ? c : 0;
+                continue;
+            }
+
+            // 如果当前字符是空格且不在引号内，则将暂存区记录的字符视作一个语句块并放入结果列表。
+            if (Character.isWhitespace(c) && noQuote) {
+                /*
+                 * 若单词之间存在多个空格，此处需要跳过，防止产生多个内容为空的数组元素。
+                 *
+                 * 如果当前暂存区为空但已识别为空引号，则需要添加一个空参数，防止某些软件中参数移位导致出错。
+                 */
+                if (stash.length() == 0 && !emptyQuote) {
                     continue;
                 }
 
-                result.add(word.toString());
-                word.setLength(0);
-                continue;
+                result.add(stash.toString());
+                stash.setLength(0);
+                emptyQuote = false;
+            } else {
+                // 如果当前字符是普通字符，则放入暂存区。
+                stash.append(c);
             }
-
-            // 如果当前字符是普通字符，则放入暂存区。
-            word.append(c);
         }
 
-        if (inQuotes) {
+        // 循环结束后标志位应当归零，否则说明存在未闭合的引号，返回空命令。
+        if (quote != 0) {
             logger.error("Unclosed quote in command [{}]!", command);
             return new String[]{""};
         }
 
         // 上述循环只处理到最后一个空格之前的字符，此处需要将剩余字符放入结果列表。
-        if (word.length() > 0) {
-            result.add(word.toString());
+        if (stash.length() > 0 || emptyQuote) {
+            result.add(stash.toString());
         }
 
         return result.toArray(new String[0]);
