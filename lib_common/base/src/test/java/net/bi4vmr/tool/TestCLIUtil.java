@@ -1,6 +1,6 @@
 package net.bi4vmr.tool;
 
-import net.bi4vmr.tool.java.common.base.CLIUtil;
+import net.bi4vmr.tool.java.common.base.system.CLIUtil;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;

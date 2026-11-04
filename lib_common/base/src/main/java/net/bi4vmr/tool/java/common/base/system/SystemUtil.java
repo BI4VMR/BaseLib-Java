@@ -35,6 +35,11 @@ public class SystemUtil {
     private static final ArchType OS_ARCH = getArchTypeInner();
 
 
+    private SystemUtil() {
+        // 静态工具类，无需实例化。
+    }
+
+
     /*
      * ----- 系统信息 -----
      */

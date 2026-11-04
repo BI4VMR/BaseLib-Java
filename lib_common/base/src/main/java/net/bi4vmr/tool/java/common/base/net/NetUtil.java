@@ -1,5 +1,6 @@
 package net.bi4vmr.tool.java.common.base.net;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -33,6 +34,27 @@ public class NetUtil {
     public static final String IPV6_LOOPBACK = "::1";
 
 
+    private NetUtil() {
+        // 静态工具类，无需实例化。
+    }
+
+
+    /**
+     * 获取主机名。
+     * <p>
+     * 该方法通常会很快地返回，但最好不要在 UI 线程中直接访问，某些极端情况下会阻塞一段时间并抛出异常（例如：Linux 平台 Hosts 文件中没有
+     * 声明 `localhost` 条目），本方法会捕获异常并返回默认值 {@code Unknown} 。
+     *
+     * @return 主机名。
+     */
+    public static String getHostName() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (Exception e) {
+            return "Unknown";
+        }
+    }
+
     /**
      * 主机可达性侦测 (TCP) 。
      *
@@ -41,7 +63,7 @@ public class NetUtil {
      * @param timeout 超时时间。
      * @return `true` 表示目标端口可达； `false` 表示目标端口不可达。
      */
-    public static boolean portScanByTCP(String host, int port, int timeout) {
+    public static boolean hostScanByTCP(String host, int port, int timeout) {
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(host, port), timeout);
             return true;

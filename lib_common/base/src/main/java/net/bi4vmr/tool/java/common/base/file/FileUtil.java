@@ -1,4 +1,7 @@
-package net.bi4vmr.tool.java.common.base;
+package net.bi4vmr.tool.java.common.base.file;
+
+import net.bi4vmr.tool.java.common.base.system.CLIUtil;
+import net.bi4vmr.tool.java.common.base.system.SystemUtil;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -28,11 +31,30 @@ public class FileUtil {
     public static final String PATH_INVALID = "/INVALID_PATH";
 
     /**
+     * 文件路径：NULL 文件（类 Unix 系统）。
+     * <p>
+     * 用于消耗数据流的虚空文件，防止 {@link Process} 等发生阻塞。
+     */
+    public static final String PATH_NULL_UNIX = "/dev/null";
+
+    /**
+     * 文件路径：NULL 文件（Windows 系统）。
+     * <p>
+     * 用于消耗数据流的虚空文件，防止 {@link Process} 等发生阻塞。
+     */
+    public static final String PATH_NULL_WINDOWS = "NUL";
+
+    /**
      * 文件：无效值。
      * <p>
      * 用于表示未初始化的文件路径，可在不希望出现空值的场景使用。
      */
     public static final File FILE_INVALID = new File(PATH_INVALID);
+
+
+    private FileUtil() {
+        // 静态工具类，无需实例化。
+    }
 
 
     /**
@@ -247,5 +269,35 @@ public class FileUtil {
      */
     public static boolean setCreateTime(String path, long timestamp) {
         return setCreateTime(new File(path), timestamp);
+    }
+
+    /**
+     * 获取虚空文件节点。
+     * <p>
+     * 用于消耗数据流的虚空文件，防止 {@link Process} 等发生阻塞。
+     * <p>
+     * 使用示例：
+     *
+     * <pre>
+     * {@code Process process = new ProcessBuilder(command)
+     *                .redirectOutput(getNullFile())
+     *                .start();}
+     * </pre>
+     * <p>
+     * 在 Java 9 或更高版本中， ProcessBuilder 已有内置的虚空文件节点，无需引入本工具。
+     *
+     * <pre>
+     * {@code Process process = new ProcessBuilder(command)
+     *                .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+     *                .start();}
+     * </pre>
+     */
+    public static File getNullFile() {
+        if (SystemUtil.isWindows()) {
+            return new File(PATH_NULL_WINDOWS);
+        } else {
+            // 非 Windows 系统都当作类 Unix 系统处理
+            return new File(PATH_NULL_UNIX);
+        }
     }
 }

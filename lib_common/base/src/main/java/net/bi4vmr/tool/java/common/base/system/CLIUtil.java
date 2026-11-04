@@ -1,8 +1,8 @@
-package net.bi4vmr.tool.java.common.base;
+package net.bi4vmr.tool.java.common.base.system;
 
+import net.bi4vmr.tool.java.common.base.general.TextUtil;
 import net.bi4vmr.tool.java.common.base.io.BaseIOUtil;
 import net.bi4vmr.tool.java.common.base.io.IOUtil;
-import net.bi4vmr.tool.java.common.base.system.SystemUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,11 @@ public class CLIUtil {
      * 日志工具。
      */
     private static final Logger logger = LoggerFactory.getLogger(CLIUtil.class);
+
+
+    private CLIUtil() {
+        // 静态工具类，无需实例化。
+    }
 
 
     /**

@@ -1,4 +1,4 @@
-package net.bi4vmr.tool.java.common.base;
+package net.bi4vmr.tool.java.common.base.general;
 
 /**
  * 数字相关工具。

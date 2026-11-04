@@ -1,6 +1,6 @@
 package net.bi4vmr.tool;
 
-import net.bi4vmr.tool.java.common.base.TextUtil;
+import net.bi4vmr.tool.java.common.base.general.TextUtil;
 import org.junit.jupiter.api.Test;
 
 /**

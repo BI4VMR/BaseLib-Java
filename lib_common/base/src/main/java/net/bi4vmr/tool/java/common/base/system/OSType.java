@@ -1,6 +1,6 @@
 package net.bi4vmr.tool.java.common.base.system;
 
-import net.bi4vmr.tool.java.common.base.TextUtil;
+import net.bi4vmr.tool.java.common.base.general.TextUtil;
 
 /**
  * 操作系统类型。

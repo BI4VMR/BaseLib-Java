@@ -1,10 +1,20 @@
 package net.bi4vmr.tool.java.common.base.io;
 
-import net.bi4vmr.tool.java.common.base.NumberUtil;
+import net.bi4vmr.tool.java.common.base.general.NumberUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.util.Arrays;
 
@@ -16,7 +26,15 @@ import java.util.Arrays;
  */
 public class FileIOUtil extends IOUtil {
 
+    /**
+     * 日志工具。
+     */
     private static final Logger logger = LoggerFactory.getLogger(FileIOUtil.class);
+
+
+    private FileIOUtil() {
+        // 静态工具类，无需实例化。
+    }
 
 
     /*

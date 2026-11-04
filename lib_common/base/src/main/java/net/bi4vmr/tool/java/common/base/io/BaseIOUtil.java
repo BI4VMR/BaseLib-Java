@@ -18,7 +18,15 @@ import java.util.List;
  */
 public class BaseIOUtil extends IOUtil {
 
+    /**
+     * 日志工具。
+     */
     private static final Logger logger = LoggerFactory.getLogger(BaseIOUtil.class);
+
+
+    private BaseIOUtil() {
+        // 静态工具类，无需实例化。
+    }
 
 
     /*

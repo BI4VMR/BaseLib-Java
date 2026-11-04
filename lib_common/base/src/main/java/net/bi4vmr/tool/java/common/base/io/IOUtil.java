@@ -13,6 +13,9 @@ import java.io.Closeable;
  */
 public class IOUtil {
 
+    /**
+     * 日志工具。
+     */
     private static final Logger logger = LoggerFactory.getLogger(IOUtil.class);
 
     /**
@@ -59,6 +62,11 @@ public class IOUtil {
      * 常用缓冲区大小：32MB。
      */
     public final static int BUFFER_SIZE_32MB = 32 * 1024 * 1024;
+
+
+    protected IOUtil() {
+        // 静态工具类，无需实例化。
+    }
 
 
     /**
