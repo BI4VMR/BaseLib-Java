@@ -1,6 +1,6 @@
 package net.bi4vmr.tool.java.common.base.system;
 
-import net.bi4vmr.tool.java.common.base.TextUtil;
+import net.bi4vmr.tool.java.common.base.general.TextUtil;
 
 /**
  * 平台架构类型。

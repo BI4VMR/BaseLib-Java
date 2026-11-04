@@ -1,6 +1,6 @@
 package net.bi4vmr.tool;
 
-import net.bi4vmr.tool.java.common.base.IdentityUtil;
+import net.bi4vmr.tool.java.common.base.general.IdentityUtil;
 import org.junit.jupiter.api.Test;
 
 /**
