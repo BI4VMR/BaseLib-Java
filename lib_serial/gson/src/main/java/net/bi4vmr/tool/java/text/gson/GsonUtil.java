@@ -1,7 +1,7 @@
 package net.bi4vmr.tool.java.text.gson;
 
 import com.google.gson.*;
-import net.bi4vmr.tool.java.common.base.TextUtil;
+import net.bi4vmr.tool.java.common.base.general.TextUtil;
 
 import java.util.ArrayList;
 import java.util.List;
