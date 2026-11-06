@@ -23,6 +23,13 @@ public class Environments {
     public static final String SHELL = "SHELL";
 
     /**
+     * 环境变量名称： {@code TERM} 。
+     * <p>
+     * Unix 系平台变量，用于指明当前终端类型。
+     */
+    public static final String TERM = "TERM";
+
+    /**
      * 环境变量名称： {@code APPDATA} 。
      * <p>
      * Windows 专有变量，值为当前用户的域内可漫游数据目录，通常是 {@code C:\Users\<用户名>\AppData\Roaming\ } 。

@@ -175,7 +175,7 @@ public class SystemUtil {
     public static String getPath() {
         String rawValue = System.getenv(Environments.PATH);
         if (rawValue == null) {
-            logger.error("Environment variable [PATH] is not exist!");
+            logger.warn("Environment variable [PATH] is not exist!");
             return "";
         }
 
@@ -190,7 +190,22 @@ public class SystemUtil {
     public static String getShell() {
         String rawValue = System.getenv(Environments.SHELL);
         if (rawValue == null) {
-            logger.error("Environment variable [SHELL] is not exist!");
+            logger.warn("Environment variable [SHELL] is not exist!");
+            return "";
+        }
+
+        return rawValue;
+    }
+
+    /**
+     * 获取环境变量 {@code TERM} 的值。
+     *
+     * @return 变量值。非空，罕见的情况下将返回空字符串。
+     */
+    public static String getTerm() {
+        String rawValue = System.getenv(Environments.TERM);
+        if (rawValue == null) {
+            logger.warn("Environment variable [TERM] is not exist!");
             return "";
         }
 
