@@ -3,7 +3,6 @@ package net.bi4vmr.tool.java.common.base.system;
 import net.bi4vmr.tool.java.common.base.general.TextUtil;
 import net.bi4vmr.tool.java.common.base.io.BaseIOUtil;
 import net.bi4vmr.tool.java.common.base.io.IOUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -324,14 +323,18 @@ public class CLIUtil {
         for (int i = 0; i < command.length(); i++) {
             char c = command.charAt(i);
 
-            // 去掉双引号后，双引号内的转义符号不再有意义，需要移除它们。
+            // 去掉双引号后，转义符号不再有意义，需要移除它们；单引号内的字符不作特殊处理。
             int nextIndex = i + 1;
             if ((c == '\\') && (quote != '\'') && nextIndex < command.length()) {
                 char next = command.charAt(nextIndex);
-                stash.append(next);
-                // 后一位字符已被录入，此处进度额外推进一位。
-                i++;
-                continue;
+                if (next == '"' || next == '\'' ||
+                        next == '\\' || next == '$' || next == '?' ||
+                        Character.isWhitespace(next)) {
+                    stash.append(next);
+                    // 后一位字符已被录入，此处进度额外推进一位。
+                    i++;
+                    continue;
+                }
             }
 
             // 如果当前字符是引号，则进入或退出引号累计模式，并跳过后续操作，将引号之间的内容视为一个整体。

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
  *
  * @author BI4VMR@outlook.com
  */
-public class TestCLIUtil {
+public class CLIUtilTest {
 
     private static void check(String command, String... expected) {
         assertArrayEquals(expected, CLIUtil.parseCommand(command), command);
@@ -45,6 +45,10 @@ public class TestCLIUtil {
     void parseWindowsPath() {
         check("dir C:\\Windows\\System32", "dir", "C:\\Windows\\System32");
         check("\"C:\\Program Files\\app.exe\" /all", "C:\\Program Files\\app.exe", "/all");
+        check("echo \\\\", "echo", "\\");
+        check("copy \\\\\\\\server\\share\\a.txt D:\\", "copy", "\\\\server\\share\\a.txt", "D:\\");
+        check("cd \"C:\\dir\\\\\"", "cd", "C:\\dir\\");
+        check("cat my\\ file.txt", "cat", "my file.txt");
     }
 
     @Test
