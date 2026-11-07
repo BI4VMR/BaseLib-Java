@@ -204,6 +204,20 @@ public class CLIUtil {
     }
 
     /**
+     * 判断命令是否执行失败。
+     * <p>
+     * 基于通用语义进行判断：状态码为 {@code 0} 时返回 {@code false} ，否则返回 {@code true} 。
+     * <p>
+     * 如果目标命令的状态码具有特殊含义，请勿使用该方法。
+     *
+     * @param status 状态码。
+     * @return 执行结果。
+     */
+    public static boolean isFailure(int status) {
+        return status != 0;
+    }
+
+    /**
      * 执行命令并获取文本消息。
      * <p>
      * 执行命令并阻塞当前线程，然后读取所有输出数据并转为文本。
