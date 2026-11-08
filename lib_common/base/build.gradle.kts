@@ -6,6 +6,7 @@ val mvnVersion: String = requireNotNull(depInTOML.version)
 
 plugins {
     alias(libJava.plugins.java.library)
+
     alias(privateLibJava.plugins.java.version)
     alias(privateLibJava.plugins.publish.private)
 }
@@ -17,6 +18,7 @@ tasks.withType<Test> {
 
 dependencies {
     implementation(libJava.slf4j.api)
+    implementation(libJava.uuidCreator)
 
     // JUnit5 BOM 版本配置文件
     testImplementation(platform(libJava.junit5.bom))

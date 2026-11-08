@@ -1,16 +1,17 @@
-package net.bi4vmr.tool.java.common.base.general;
+package net.bi4vmr.tool.java.common.base.time;
+
+import net.bi4vmr.tool.java.common.base.general.NumberUtil;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 
 /**
- * 时间与日期工具类。
+ * 时间与日期工具。
  *
- * @author BI4VMR@outlook.com
+ * @author bi4vmr@outlook.com
+ * @since 1.0.0
  */
 public class DateTimeUtil {
 
@@ -84,6 +85,12 @@ public class DateTimeUtil {
     private static final String[] dayNames_CHI1 = {"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
     private static final String[] dayNames_CHI2 = {"星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"};
     private static final String[] dayNames_ENG = {"Mon.", "Tues.", "Wed.", "Thur.", "Fri.", "Sat.", "Sun."};
+
+
+    private DateTimeUtil() {
+        // 静态工具类，无需实例化。
+    }
+
 
     /**
      * 获取当前时间与日期的格式化文本（默认格式）。
@@ -435,5 +442,46 @@ public class DateTimeUtil {
      */
     public static String getWeekDayName(LocalDateTime localDateTime, WEEKDAY_STYLE style) {
         return getWeekDayName(localDateTime.toLocalDate(), style);
+    }
+
+
+    /*
+     * ----- 时刻与时间戳 -----
+     */
+
+    /**
+     * 时间戳转 {@code ZonedDateTime} 。
+     *
+     * @param timestamp 时间戳（毫秒）。
+     * @param zoneId    时区 ID 。
+     * @return {@code ZonedDateTime} 。
+     */
+    public static ZonedDateTime timestampToZonedDateTime(long timestamp, ZoneId zoneId) {
+        return ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(timestamp),
+                zoneId
+        );
+    }
+
+    /**
+     * 时间戳转 {@code ZonedDateTime} 。
+     * <p>
+     * 默认使用当前系统时区。
+     *
+     * @param timestamp 时间戳（毫秒）。
+     * @return {@code ZonedDateTime} 。
+     */
+    public static ZonedDateTime timestampToZonedDateTime(long timestamp) {
+        return timestampToZonedDateTime(timestamp, ZoneId.systemDefault());
+    }
+
+    /**
+     * {@code ZonedDateTime} 转时间戳。
+     *
+     * @param zonedDateTime {@code ZonedDateTime} 。
+     * @return 时间戳（毫秒）。
+     */
+    public static long zonedDateTimeToTimestamp(ZonedDateTime zonedDateTime) {
+        return zonedDateTime.toInstant().toEpochMilli();
     }
 }

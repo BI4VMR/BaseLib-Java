@@ -8,6 +8,11 @@ package net.bi4vmr.tool.java.common.base.general;
  */
 public class NumberUtil {
 
+    private NumberUtil() {
+        // 静态工具类，无需实例化。
+    }
+
+
     /*
      * ----- 数字与文本转换 -----
      */

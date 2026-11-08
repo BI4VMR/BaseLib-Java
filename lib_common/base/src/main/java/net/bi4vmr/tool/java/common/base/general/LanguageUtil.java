@@ -8,6 +8,11 @@ package net.bi4vmr.tool.java.common.base.general;
  */
 public class LanguageUtil {
 
+    private LanguageUtil() {
+        // 静态工具类，无需实例化。
+    }
+
+
     /*
      * ----- 数据类型转换 -----
      */
@@ -15,10 +20,10 @@ public class LanguageUtil {
     /**
      * 将布尔值转为整型值。
      * <p>
-     * C语言风格的通用数值转换， `true` 对应 `1` ； `false` 对应 `0` 。
+     * C 语言风格的通用数值转换，`true` 对应 `1`；`false` 对应 `0`。
      *
      * @param input 布尔值。
-     * @return 输入值为 `true` 时返回 `1` ；否则返回 `0` 。
+     * @return 数值。
      */
     public static int booleanToInt(boolean input) {
         return input ? 1 : 0;
@@ -27,10 +32,10 @@ public class LanguageUtil {
     /**
      * 将布尔值转为长整型值。
      * <p>
-     * C语言风格的通用数值转换， `true` 对应 `1` ； `false` 对应 `0` 。
+     * C 语言风格的通用数值转换，`true` 对应 `1`；`false` 对应 `0`。
      *
      * @param input 布尔值。
-     * @return 输入值为 `true` 时返回 `1` ；否则返回 `0` 。
+     * @return 数值。
      */
     public static long booleanToLong(boolean input) {
         return booleanToInt(input);
@@ -39,10 +44,10 @@ public class LanguageUtil {
     /**
      * 将布尔值转为短整型值。
      * <p>
-     * C语言风格的通用数值转换， `true` 对应 `1` ； `false` 对应 `0` 。
+     * C 语言风格的通用数值转换，`true` 对应 `1`；`false` 对应 `0`。
      *
      * @param input 布尔值。
-     * @return 输入值为 `true` 时返回 `1` ；否则返回 `0` 。
+     * @return 数值。
      */
     public static short booleanToShort(boolean input) {
         return (short) booleanToInt(input);
@@ -51,10 +56,10 @@ public class LanguageUtil {
     /**
      * 将布尔值转为字节型值。
      * <p>
-     * C语言风格的通用数值转换， `true` 对应 `1` ； `false` 对应 `0` 。
+     * C 语言风格的通用数值转换，`true` 对应 `1`；`false` 对应 `0`。
      *
      * @param input 布尔值。
-     * @return 输入值为 `true` 时返回 `1` ；否则返回 `0` 。
+     * @return 数值。
      */
     public static byte booleanToByte(boolean input) {
         return (byte) booleanToInt(input);
@@ -63,10 +68,10 @@ public class LanguageUtil {
     /**
      * 将整型值转为布尔值。
      * <p>
-     * C语言风格的通用数值转换， `1` 对应 `true` ； 其他值对应 `false` 。
+     * C 语言风格的通用数值转换，非 `0` 对应 `true`；`0` 对应 `false`。
      *
      * @param input 输入值。
-     * @return 输入值为 `1` 时返回 `true` ；否则返回 `0` 。
+     * @return 布尔值。
      */
     public static boolean intToBoolean(int input) {
         return input == 1;
@@ -75,10 +80,10 @@ public class LanguageUtil {
     /**
      * 将长整型值转为布尔值。
      * <p>
-     * C语言风格的通用数值转换， `1` 对应 `true` ； 其他值对应 `false` 。
+     * C 语言风格的通用数值转换，非 `0` 对应 `true`；`0` 对应 `false`。
      *
      * @param input 输入值。
-     * @return 输入值为 `1` 时返回 `true` ；否则返回 `0` 。
+     * @return 布尔值。
      */
     public static boolean longToBoolean(long input) {
         return intToBoolean((int) input);
@@ -87,10 +92,10 @@ public class LanguageUtil {
     /**
      * 将短整型值转为布尔值。
      * <p>
-     * C语言风格的通用数值转换， `1` 对应 `true` ； 其他值对应 `false` 。
+     * C 语言风格的通用数值转换，非 `0` 对应 `true`；`0` 对应 `false`。
      *
      * @param input 输入值。
-     * @return 输入值为 `1` 时返回 `true` ；否则返回 `0` 。
+     * @return 布尔值。
      */
     public static boolean shortToBoolean(short input) {
         return intToBoolean(input);
@@ -99,10 +104,10 @@ public class LanguageUtil {
     /**
      * 将字节型值转为布尔值。
      * <p>
-     * C语言风格的通用数值转换， `1` 对应 `true` ； 其他值对应 `false` 。
+     * C 语言风格的通用数值转换，非 `0` 对应 `true`；`0` 对应 `false`。
      *
      * @param input 输入值。
-     * @return 输入值为 `1` 时返回 `true` ；否则返回 `0` 。
+     * @return 布尔值。
      */
     public static boolean byteToBoolean(byte input) {
         return intToBoolean(input);

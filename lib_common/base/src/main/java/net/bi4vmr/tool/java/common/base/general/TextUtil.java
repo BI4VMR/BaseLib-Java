@@ -8,6 +8,11 @@ package net.bi4vmr.tool.java.common.base.general;
  */
 public class TextUtil {
 
+    private TextUtil() {
+        // 静态工具类，无需实例化。
+    }
+
+
     /**
      * 判断字符串内容是否为空。
      * <p>
