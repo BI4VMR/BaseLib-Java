@@ -94,47 +94,11 @@ public class SystemUtil {
     }
 
     /**
-     * 获取当前操作系统类型。
-     * <p>
-     * 将 {@code os.name} 系统属性与已知系统名称列表进行匹配，判断当前运行环境。
-     *
-     * @return {@link OSType} 枚举常量。
-     */
-    private static OSType getOSTypeInner() {
-        String osName = System.getProperty(Propertys.OS_NAME);
-        for (OSType type : OSType.values()) {
-            if (type.isAliasMatch(osName)) {
-                return type;
-            }
-        }
-
-        return OSType.UNKNOWN;
-    }
-
-    /**
-     * 获取当前平台架构名称。
-     * <p>
-     * 将 {@code os.arch} 系统属性与已知平台架构列表进行匹配，判断当前运行环境。
-     *
-     * @return {@link ArchType} 枚举常量。
-     */
-    private static ArchType getArchTypeInner() {
-        String osArch = System.getProperty(Propertys.OS_ARCH);
-        for (ArchType type : ArchType.values()) {
-            if (type.isAliasMatch(osArch)) {
-                return type;
-            }
-        }
-
-        return ArchType.UNKNOWN;
-    }
-
-    /**
      * 获取用户名称。
      *
      * @return 用户名称。
      */
-    private static String getUserName() {
+    public static String getUserName() {
         return System.getProperty(Propertys.USER_NAME);
     }
 
@@ -143,7 +107,7 @@ public class SystemUtil {
      *
      * @return 用户数据目录。
      */
-    private static File getUserHome() {
+    public static File getUserHome() {
         String path = System.getProperty(Propertys.USER_HOME);
         return new File(path);
     }
@@ -157,7 +121,7 @@ public class SystemUtil {
      *
      * @return 工作目录。
      */
-    private static File getWorkDirectory() {
+    public static File getWorkDirectory() {
         String path = System.getProperty(Propertys.WORK_DIR);
         return new File(path);
     }
@@ -255,5 +219,46 @@ public class SystemUtil {
         }
 
         return new File(rawValue);
+    }
+
+
+    /*
+     * ----- 系统信息 -----
+     */
+
+    /**
+     * 获取当前操作系统类型。
+     * <p>
+     * 将 {@code os.name} 系统属性与已知系统名称列表进行匹配，判断当前运行环境。
+     *
+     * @return {@link OSType} 枚举常量。
+     */
+    private static OSType getOSTypeInner() {
+        String osName = System.getProperty(Propertys.OS_NAME);
+        for (OSType type : OSType.values()) {
+            if (type.isAliasMatch(osName)) {
+                return type;
+            }
+        }
+
+        return OSType.UNKNOWN;
+    }
+
+    /**
+     * 获取当前平台架构名称。
+     * <p>
+     * 将 {@code os.arch} 系统属性与已知平台架构列表进行匹配，判断当前运行环境。
+     *
+     * @return {@link ArchType} 枚举常量。
+     */
+    private static ArchType getArchTypeInner() {
+        String osArch = System.getProperty(Propertys.OS_ARCH);
+        for (ArchType type : ArchType.values()) {
+            if (type.isAliasMatch(osArch)) {
+                return type;
+            }
+        }
+
+        return ArchType.UNKNOWN;
     }
 }
